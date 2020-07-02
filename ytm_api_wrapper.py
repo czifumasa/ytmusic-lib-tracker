@@ -11,7 +11,6 @@ def open_api():
 
 
 def get_my_playlist_ids(api):
-
     my_playlists = api.get_library_playlists()
     playlist_ids = []
     for playlist in my_playlists:
@@ -20,7 +19,14 @@ def get_my_playlist_ids(api):
     return playlist_ids
 
 
-def get_songs_from_playlist_by_id(songs_list):
+def get_songs_from_playlist(api, playlist_id):
+    playlist = api.get_playlist(playlist_id, 5000)
+
+    log('\nFetched ' + str(len(playlist['tracks'])) + ' tracks from \'' + playlist['title'] + '\' playlist')
+    return playlist['tracks']
+
+
+def group_songs_by_id(songs_list):
     songs_by_id = {}
 
     for track in songs_list:
@@ -29,35 +35,40 @@ def get_songs_from_playlist_by_id(songs_list):
     return songs_by_id
 
 
-def list_duplicated_songs_in_playlist(api, playlist_id):
-
-    playlist = api.get_playlist(playlist_id, 5000)
-    songs = playlist['tracks']
-
-    log('Duplicated items in playlist: ' + playlist['title'])
-
+def get_duplicated_song_ids(songs):
     video_ids = []
     for song in songs:
         video_ids.append(song['videoId'])
 
-    duplicated_ids = list_duplicates(video_ids)
+    duplicated_track_ids = get_duplicated_items_from_list(video_ids)
+    log('Found ' + str(len(duplicated_track_ids)) + ' duplicated tracks')
+    return duplicated_track_ids
 
-    songs_by_ids = get_songs_from_playlist_by_id(songs)
 
-    duplicated_song_strings = []
-    for dupe in duplicated_ids:
-        duplicated_song_strings.append(song_string_representation(songs_by_ids[dupe]))
+# if ids_to_export is empty then export everything
+def export_songs(songs, ids_to_export=None):
+    grouped_songs = group_songs_by_id(songs)
+    if ids_to_export:
+        grouped_songs = {song_id: song for (song_id, song) in grouped_songs.items() if song_id in ids_to_export}
 
-    return duplicated_song_strings
+    export_result = []
+    for (song_id, song) in grouped_songs.items():
+        song_row = [song_artists_string_representation(song['artists']), song['title'], (song_string_representation(song)), song_id]
+        export_result.append(song_row)
+    return export_result
 
 
 def song_string_representation(song):
-
-    artists = song['artists']
+    artists = song_artists_string_representation(song['artists'])
     title = song['title']
 
-    return artists[0]['name'] + ' - ' + title
+    return artists + ' - ' + title
 
+
+def song_artists_string_representation(artists):
+
+    artists_names = [artist['name'] for artist in artists]
+    return ','.join(artists_names)
 
 def setup_ytm_login():
     YTMusic.setup(filepath='headers_auth.json', headers_raw='POST /youtubei/v1/browse?alt=json&key'
