@@ -1,0 +1,9 @@
+# Default ignored files
+
+.idea/
+target/
+
+*.iml
+
+#Login cookie
+headers_auth.json
