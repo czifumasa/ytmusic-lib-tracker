@@ -1,5 +1,6 @@
 from ytm_api_wrapper import *
 from csv_wrapper import *
+import time
 
 if len(sys.argv) < 2:
     log('ERROR output directory is required')
@@ -15,12 +16,11 @@ api = open_api()
 
 playlistIds = get_my_playlist_ids(api)
 
-songs = list_duplicated_songs_in_playlist(api, playlistIds[3])
+songs = get_songs_from_playlist(api, playlistIds[8])
 
-list_of_song_rows = []
-for song in songs:
-    song_row = [song]
-    list_of_song_rows.append(song_row)
+duplicated_song_ids = get_duplicated_song_ids(songs)
 
-create_csv_with_list_of_dict(sys.argv[1]+'/duplicated_songs.csv', list_of_song_rows)
+export_result = export_songs(songs, duplicated_song_ids)
+create_csv_with_list_of_dict(sys.argv[1]+'/duplicated_songs.csv', export_result)
+
 sys.exit()
