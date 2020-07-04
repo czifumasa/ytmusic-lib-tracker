@@ -1,6 +1,6 @@
 from ytmusicapi import YTMusic
+
 from common import *
-import json
 
 
 def open_api():
@@ -10,50 +10,66 @@ def open_api():
     return api
 
 
-def get_my_playlist_ids(api):
-    my_playlists = api.get_library_playlists()
+# returns [{id: playlistId, name: playlistName},...]
+def get_my_playlist_ids_and_names(api):
+    my_playlists = api.get_library_playlists(200)
     playlist_ids = []
     for playlist in my_playlists:
         # TODO create constants
-        playlist_ids.append(playlist['playlistId'])
+        playlist_ids.append({'id': playlist['playlistId'], 'name': playlist['title']})
     return playlist_ids
 
 
-def get_songs_from_playlist(api, playlist_id):
+# returns [id1:[song1,song2,song3], id2: [song4],...]
+def get_songs_from_playlist_grouped_by_id(api, playlist_id):
     playlist = api.get_playlist(playlist_id, 5000)
 
     log('\nFetched ' + str(len(playlist['tracks'])) + ' tracks from \'' + playlist['title'] + '\' playlist')
-    return playlist['tracks']
+    return group_songs_by_id(playlist['tracks'])
 
 
 def group_songs_by_id(songs_list):
     songs_by_id = {}
 
     for track in songs_list:
-        songs_by_id[track['videoId']] = track
+        if track['videoId'] in songs_by_id:
+            songs_by_id[track['videoId']].append(track)
+        else:
+            songs_by_id[track['videoId']] = [track]
 
     return songs_by_id
 
 
-def get_duplicated_song_ids(songs):
-    video_ids = []
-    for song in songs:
-        video_ids.append(song['videoId'])
+def create_list_of_duplicated_sons(grouped_songs_by_id):
+    duplicated_songs = flatten_list([get_list_of_duplicated_songs(song_id, songs_list) for (song_id, songs_list) in grouped_songs_by_id.items()])
 
-    duplicated_track_ids = get_duplicated_items_from_list(video_ids)
-    log('Found ' + str(len(duplicated_track_ids)) + ' duplicated tracks')
-    return duplicated_track_ids
+    log('Found ' + str(len(duplicated_songs)) + ' duplicated tracks')
+    return duplicated_songs
 
 
-# if ids_to_export is empty then export everything
-def export_songs(songs, ids_to_export=None):
-    grouped_songs = group_songs_by_id(songs)
-    if ids_to_export:
-        grouped_songs = {song_id: song for (song_id, song) in grouped_songs.items() if song_id in ids_to_export}
+def get_list_of_duplicated_songs(song_id, songs_list):
+    if len(songs_list) > 1:
+        if song_id is not None:
+            return [songs_list[0]]
+        else:
+            song_strings = [song_string_representation(song) for song in songs_list]
+            duplicated_song_strings = get_duplicated_items_from_list(song_strings)
 
+            return [next(song for song in songs_list if song_string_representation(song) == song_string) for song_string in duplicated_song_strings]
+    else:
+        return []
+
+
+def export_songs(songs, playlist):
     export_result = []
-    for (song_id, song) in grouped_songs.items():
-        song_row = [song_artists_string_representation(song['artists']), song['title'], (song_string_representation(song)), song_id]
+    for song in songs:
+        song_row = [song_artists_string_representation(song['artists']),
+                    song['title'],
+                    song_string_representation(song),
+                    song['videoId'],
+                    set_video_id_string_representation(song),
+                    playlist['name'],
+                    playlist['id']]
         export_result.append(song_row)
     return export_result
 
@@ -66,9 +82,17 @@ def song_string_representation(song):
 
 
 def song_artists_string_representation(artists):
-
     artists_names = [artist['name'] for artist in artists]
     return ','.join(artists_names)
+
+
+def set_video_id_string_representation(song):
+    return song['setVideoId'] if 'setVideoId' in song else None
+
+
+def create_temporary_id_for_songs_without_one(playlist, counter):
+    return 'missingId_from_' + playlist['id'] + '_' + str(counter)
+
 
 def setup_ytm_login():
     YTMusic.setup(filepath='headers_auth.json', headers_raw='POST /youtubei/v1/browse?alt=json&key'
