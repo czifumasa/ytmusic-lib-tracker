@@ -1,11 +1,35 @@
+import getopt
+
 from csv_wrapper import *
 from ytm_api_wrapper import *
 
-if len(sys.argv) < 2:
+output_dir = None
+export_duplicates = False
+
+short_options = "o:d"
+long_options = ["output=", "duplicates"]
+
+# parse script arguments
+try:
+    arguments, values = getopt.getopt(sys.argv[1:], short_options, long_options)
+except getopt.error as err:
+    # Output error, and return with an error code
+    throw_error(str(err))
+    sys.exit(2)
+
+# process given arguments
+for current_argument, current_value in arguments:
+    if current_argument in ("-d", "--duplicates"):
+        export_duplicates = True
+        log("Exporting list of duplicates")
+    elif current_argument in ("-o", "--output"):
+        output_dir = current_value
+        log("Output directory is " + current_value)
+
+if not output_dir:
     throw_error('ERROR output directory is required')
 
 # setup the output directory, create it if needed
-output_dir = sys.argv[1]
 create_dir_if_not_exist(output_dir)
 
 api = open_api()
@@ -24,5 +48,33 @@ def export_duplicated_songs():
     create_csv_with_list_of_dict(output_dir + '/duplicated_songs.csv', headers, export_result)
 
 
-export_duplicated_songs()
+def export_all_songs():
+
+    export_result = []
+    export_result.extend(export_songs_from_library())
+    export_result.extend(export_songs_from_playlists())
+
+    headers = ['Artists', 'Title', 'FullName', 'VideoId', 'SetVideoId', 'Playlist', 'PlaylistId']
+    create_csv_with_list_of_dict(output_dir + '/exported_songs.csv', headers, export_result)
+
+
+def export_songs_from_library():
+    library_songs = get_all_songs_from_my_library(api)
+    return export_songs(library_songs, {'id': 'Library', 'name': 'Library'})
+
+
+def export_songs_from_playlists():
+    playlists = get_my_playlist_ids_and_names(api)
+    export_result = []
+    for playlist in playlists:
+        songs = get_songs_from_playlist(api, playlist['id'])
+        export_result.extend(export_songs(songs, playlist))
+    return export_result
+
+
+if export_duplicates:
+    export_duplicated_songs()
+else:
+    export_all_songs()
+
 sys.exit()
