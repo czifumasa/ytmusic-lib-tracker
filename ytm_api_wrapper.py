@@ -10,21 +10,32 @@ def open_api():
     return api
 
 
+def get_all_songs_from_my_library(api):
+    library_songs = api.get_library_songs(100000)
+
+    log('\nFetched ' + str(len(library_songs)) + ' tracks from Library')
+    return library_songs
+
+
 # returns [{id: playlistId, name: playlistName},...]
 def get_my_playlist_ids_and_names(api):
     my_playlists = api.get_library_playlists(200)
     playlist_ids = []
     for playlist in my_playlists:
-        # TODO create constants
         playlist_ids.append({'id': playlist['playlistId'], 'name': playlist['title']})
     return playlist_ids
 
 
-# returns [id1:[song1,song2,song3], id2: [song4],...]
-def get_songs_from_playlist_grouped_by_id(api, playlist_id):
+def get_songs_from_playlist(api, playlist_id):
     playlist = api.get_playlist(playlist_id, 5000)
 
     log('\nFetched ' + str(len(playlist['tracks'])) + ' tracks from \'' + playlist['title'] + '\' playlist')
+    return playlist['tracks']
+
+
+# returns [id1:[song1,song2,song3], id2: [song4],...]
+def get_songs_from_playlist_grouped_by_id(api, playlist_id):
+    playlist = get_songs_from_playlist(api, playlist_id)
     return group_songs_by_id(playlist['tracks'])
 
 
@@ -41,7 +52,8 @@ def group_songs_by_id(songs_list):
 
 
 def create_list_of_duplicated_sons(grouped_songs_by_id):
-    duplicated_songs = flatten_list([get_list_of_duplicated_songs(song_id, songs_list) for (song_id, songs_list) in grouped_songs_by_id.items()])
+    duplicated_songs = flatten_list(
+        [get_list_of_duplicated_songs(song_id, songs_list) for (song_id, songs_list) in grouped_songs_by_id.items()])
 
     log('Found ' + str(len(duplicated_songs)) + ' duplicated tracks')
     return duplicated_songs
@@ -55,7 +67,8 @@ def get_list_of_duplicated_songs(song_id, songs_list):
             song_strings = [song_string_representation(song) for song in songs_list]
             duplicated_song_strings = get_duplicated_items_from_list(song_strings)
 
-            return [next(song for song in songs_list if song_string_representation(song) == song_string) for song_string in duplicated_song_strings]
+            return [next(song for song in songs_list if song_string_representation(song) == song_string) for song_string
+                    in duplicated_song_strings]
     else:
         return []
 
