@@ -92,20 +92,23 @@ def song_string_representation(song):
     artists = song_artists_string_representation(song['artists'])
     title = song['title']
 
-    return artists + ' - ' + title
+    if artists:
+        return artists + ' - ' + title
+    return ' - ' + title
 
 
 def song_artists_string_representation(artists):
-    artists_names = [artist['name'] for artist in artists]
-    return ','.join(artists_names)
+    if artists:
+        artists_names = [artist['name'] for artist in artists]
+        return ','.join(artists_names)
+    return None
 
 
 def song_album_string_representation(album):
     if album:
         if "name" in album:
             return album["name"]
-    else:
-        return None
+    return None
 
 
 def set_video_id_string_representation(song):
