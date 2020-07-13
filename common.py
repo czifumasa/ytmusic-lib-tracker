@@ -50,3 +50,14 @@ def get_duplicated_items_from_list(seq):
     seen_twice = set(x for x in seq if x in seen or seen_add(x))
     # turn the set into a list (as requested)
     return list(seen_twice)
+
+
+def group_list_by_function(seq, function):
+    grouped_elements = {}
+    for element in seq:
+        key = function(element)
+        if key in grouped_elements:
+            grouped_elements[key].append(element)
+        else:
+            grouped_elements[key] = [element]
+    return grouped_elements

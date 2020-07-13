@@ -6,8 +6,8 @@ from ytm_api_wrapper import *
 output_dir = None
 export_duplicates = False
 
-short_options = "o:d"
-long_options = ["output=", "duplicates"]
+short_options = 'o:d'
+long_options = ['output=', 'duplicates']
 
 # parse script arguments
 try:
@@ -18,13 +18,13 @@ except getopt.error as err:
     sys.exit(2)
 
 # process given arguments
-for current_argument, current_value in arguments:
-    if current_argument in ("-d", "--duplicates"):
+for arg, val in arguments:
+    if arg in ('-d', '--duplicates'):
         export_duplicates = True
-        log("Exporting list of duplicates")
-    elif current_argument in ("-o", "--output"):
-        output_dir = current_value
-        log("Output directory is " + current_value)
+        log('Exporting list of duplicates')
+    elif arg in ('-o', '--output'):
+        output_dir = val
+        log('Output directory is \'' + val + '\'')
 
 if not output_dir:
     throw_error('ERROR output directory is required')
