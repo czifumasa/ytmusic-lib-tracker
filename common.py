@@ -1,7 +1,13 @@
 import codecs
 import os
+import re
+import string
 import sys
 import time
+from datetime import datetime
+from difflib import SequenceMatcher
+
+import unidecode
 
 # the logfile for keeping track of things
 logfile = None
@@ -61,3 +67,28 @@ def group_list_by_function(seq, function):
         else:
             grouped_elements[key] = [element]
     return grouped_elements
+
+
+def current_date_time_to_file_name_string():
+    return datetime.today().strftime('%Y_%m_%d_%H_%M_%S')
+
+
+def get_comparable_text(text):
+    # omit text in brackets
+    t = re.sub(r'[\(\[].*?[\)\]]', '', text)
+    # omit punctuation
+    t = t.translate(str.maketrans('', '', string.punctuation))
+    # trim
+    t = t.strip()
+    # to lower case
+    t = t.lower()
+    # normalize by removing diacritics
+    t = unidecode.unidecode(t)
+    return t
+
+
+def are_two_texts_similar(t1, t2, expected_ratio):
+    similarity = SequenceMatcher(None, t1, t2).quick_ratio()
+    if expected_ratio < similarity < 1:
+        log(t1 + '  ' + t2)
+    return similarity > expected_ratio
