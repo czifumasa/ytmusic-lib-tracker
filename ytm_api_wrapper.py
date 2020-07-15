@@ -94,7 +94,7 @@ def song_string_representation(song):
 
     if artists:
         return artists + ' - ' + title
-    return ' - ' + title
+    return ' - ' + title  # todo fix 6.24
 
 
 def song_artists_string_representation(artists):

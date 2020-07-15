@@ -41,14 +41,21 @@ if not current_export_file:
     throw_error('ERROR current export result file is required')
 
 
-def import_songs_from_csv_file(filename):
+def import_track_records_from_csv_file(filename):
     # TODO remove library filter
-    song_rows = [TrackRecord(song_row) for song_row in get_list_of_rows_from_file(filename) if
-                 TrackRecord(song_row).playlist_name != 'Library']
-    return song_rows
+    track_records = [TrackRecord(csv_row) for csv_row in get_list_of_rows_from_file(filename) if TrackRecord(csv_row).playlist_name != 'Library']
+    return track_records
 
 
-def create_changelog(previous_list, current_list):
+def export_track_matches_to_csv_file(matches):
+    csv_rows = [track_match.serialize_to_csv_row() for track_match in matches]
+    headers = ['Status', 'Details', 
+               'Old_Artists', 'Old_Title', 'Old_FullName', 'Old_Album', 'Old_VideoId', 'Old_SetVideoId', 'Old_Playlist', 'Old_PlaylistId',
+               'New_Artists', 'New_Title', 'New_FullName', 'New_Album', 'New_VideoId', 'New_SetVideoId', 'New_Playlist', 'New_PlaylistId']
+    create_csv_with_list_of_dict(output_dir + '/' + current_date_time_to_file_name_string() + '_change_log.csv', headers, csv_rows)
+
+
+def create_match_results(previous_list, current_list):
     unchanged_songs = []  # 5216
     added_songs = []
     removed_songs = []
@@ -80,22 +87,24 @@ def create_changelog(previous_list, current_list):
 
     added_songs.extend(current_list_buffer.values())
 
-    result = []
-    return result
+    return match_results
 
 
 def get_match_functions():
     return [TrackMatcher.same_hash_matcher,
+            TrackMatcher.thumbs_up_your_likes_matcher,
             TrackMatcher.similar_artists_matcher,
-            TrackMatcher.same_id_matcher]
+            TrackMatcher.same_id_matcher,
+            TrackMatcher.similar_titles_matcher]
 
 
-previous_song_rows = import_songs_from_csv_file(previous_export_file)
-current_song_rows = import_songs_from_csv_file(current_export_file)
+previous_song_rows = import_track_records_from_csv_file(previous_export_file)
+current_song_rows = import_track_records_from_csv_file(current_export_file)
 
 start = timer()
-create_changelog(previous_song_rows, current_song_rows)
+track_matches = create_match_results(previous_song_rows, current_song_rows)
+export_track_matches_to_csv_file(track_matches)
 end = timer()
-log('Operation took: ' + str(end - start) + ' sec.')
+log('Creating changelog took: ' + str(end - start) + ' sec.')
 
 sys.exit()
