@@ -43,7 +43,8 @@ if not current_export_file:
 
 def import_track_records_from_csv_file(filename):
     # TODO remove library filter
-    track_records = [TrackRecord(csv_row) for csv_row in get_list_of_rows_from_file(filename) if TrackRecord(csv_row).playlist_name != 'Library']
+    track_records = [TrackRecord(csv_row) for csv_row in get_list_of_rows_from_file(filename) if
+                     TrackRecord(csv_row).playlist_name != 'Library']
     return track_records
 
 
@@ -52,7 +53,7 @@ def export_track_matches_to_csv_file(matches):
     headers = ['Status', 'Details', 
                'Old_Artists', 'Old_Title', 'Old_FullName', 'Old_Album', 'Old_VideoId', 'Old_SetVideoId', 'Old_Playlist', 'Old_PlaylistId',
                'New_Artists', 'New_Title', 'New_FullName', 'New_Album', 'New_VideoId', 'New_SetVideoId', 'New_Playlist', 'New_PlaylistId']
-    create_csv_with_list_of_dict(output_dir + '/' + current_date_time_to_file_name_string() + '_change_log.csv', headers, csv_rows)
+    create_csv_with_list_of_dict(output_dir, 'change_log', headers, csv_rows, True)
 
 
 def create_match_results(previous_list, current_list):
