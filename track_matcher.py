@@ -16,7 +16,7 @@ def thumbs_up_your_likes_matcher(track_to_find, buffer):
     matches = []
     for track in flatten_list(buffer.values()):
         if track.is_equal_by_title(track_to_find) and track.is_equal_by_artists(track_to_find):
-            matches.append(MatchResult(track_to_find, track, 'UNCHANGED', 'Thumbs Up playlist is now Your Likes playlist'))
+            matches.append(MatchResult(track_to_find, track, 'MODIFIED', '\'Thumbs Up\' playlist is now \'Your Likes\' playlist'))
     return matches
 
 
@@ -32,7 +32,7 @@ def same_id_matcher(track_to_find, buffer):
     matches = []
     for track in flatten_list(buffer.values()):
         if track.is_equal_by_id(track_to_find):
-            matches.append(MatchResult(track_to_find, track, 'MODIFIED', 'Metadata could have been changed'))
+            matches.append(MatchResult(track_to_find, track, 'MODIFIED', 'Track with same id has been found. Metadata could have been changed'))
     return matches
 
 
@@ -40,11 +40,15 @@ def similar_titles_matcher(track_to_find, buffer):
     matches = []
     for track in flatten_list(buffer.values()):
         if track.is_similar_by_artists_and_titles(track_to_find):
-            matches.append(MatchResult(track_to_find, track, 'MODIFIED', 'Similar song has been found. Verify it manually, it could be different version.'))
+            matches.append(MatchResult(track_to_find, track, 'MODIFIED', 'Similar song has been found. Verify it manually if it\'s the same track as before'))
     return matches
 
 
+def create_match_results_for_unmatched_tracks_from_previous_file(unmatched_tracks):
+    return [MatchResult(None, track, 'REMOVED', 'No match from current file found. Probably track has been removed from the playlist recently') for track in unmatched_tracks]
+
+
 def create_match_results_for_unmatched_tracks_from_current_file(unmatched_tracks):
-    return [MatchResult(None, track, 'ADDED', 'No match from previous file found. Probably track has been added to playlist recently') for track in unmatched_tracks]
+    return [MatchResult(None, track, 'ADDED', 'No match from previous file found. Probably track has been added to the playlist recently') for track in unmatched_tracks]
 
 
