@@ -36,7 +36,7 @@ def get_songs_from_playlist(api, playlist_id):
 # returns [id1:[song1,song2,song3], id2: [song4],...]
 def get_songs_from_playlist_grouped_by_id(api, playlist_id):
     playlist = get_songs_from_playlist(api, playlist_id)
-    return group_songs_by_id(playlist['tracks'])
+    return group_songs_by_id(playlist)
 
 
 def group_songs_by_id(songs_list):
