@@ -45,7 +45,7 @@ def export_duplicated_songs():
         export_result.extend(export_songs(duplicated_songs, playlist))
 
     headers = ['Artists', 'Title', 'FullName', 'Album', 'VideoId', 'SetVideoId', 'Playlist', 'PlaylistId']
-    create_csv_with_list_of_dict(output_dir + '/duplicated_songs.csv', headers, export_result)
+    create_csv_with_list_of_dict(output_dir, 'duplicated_songs', headers, export_result, True)
 
 
 def export_all_songs():
@@ -55,7 +55,7 @@ def export_all_songs():
     export_result.extend(export_songs_from_playlists())
 
     headers = ['Artists', 'Title', 'FullName', 'Album', 'VideoId', 'SetVideoId', 'Playlist', 'PlaylistId']
-    create_csv_with_list_of_dict(output_dir + '/exported_songs.csv', headers, export_result)
+    create_csv_with_list_of_dict(output_dir, 'exported_songs', headers, export_result, True)
 
 
 def export_songs_from_library():
