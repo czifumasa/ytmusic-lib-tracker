@@ -1,10 +1,9 @@
 import getopt
 from timeit import default_timer as timer
 
-import TrackMatcher
 from TrackRecord import TrackRecord
 from csv_wrapper import *
-from ytm_api_wrapper import *
+from track_matcher import *
 
 output_dir = None
 previous_export_file = None
@@ -86,17 +85,18 @@ def create_match_results(previous_list, current_list):
             else:
                 unprocessed_tracks.append(track_to_find)
 
-    added_songs.extend(current_list_buffer.values())
+    unmatched_tracks_from_current_file = flatten_list(current_list_buffer.values())
+    match_results.extend(create_match_results_for_unmatched_tracks_from_current_file(unmatched_tracks_from_current_file))
 
     return match_results
 
 
 def get_match_functions():
-    return [TrackMatcher.same_hash_matcher,
-            TrackMatcher.thumbs_up_your_likes_matcher,
-            TrackMatcher.similar_artists_matcher,
-            TrackMatcher.same_id_matcher,
-            TrackMatcher.similar_titles_matcher]
+    return [same_hash_matcher,
+            thumbs_up_your_likes_matcher,
+            similar_artists_matcher,
+            same_id_matcher,
+            similar_titles_matcher]
 
 
 previous_song_rows = import_track_records_from_csv_file(previous_export_file)
