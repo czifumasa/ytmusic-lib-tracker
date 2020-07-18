@@ -49,9 +49,9 @@ def import_track_records_from_csv_file(filename):
 
 def export_track_matches_to_csv_file(matches):
     csv_rows = [track_match.serialize_to_csv_row() for track_match in matches]
-    headers = ['Status', 'Details', 
-               'Old_Artists', 'Old_Title', 'Old_FullName', 'Old_Album', 'Old_VideoId', 'Old_SetVideoId', 'Old_Playlist', 'Old_PlaylistId',
-               'New_Artists', 'New_Title', 'New_FullName', 'New_Album', 'New_VideoId', 'New_SetVideoId', 'New_Playlist', 'New_PlaylistId']
+    headers = ['Status', 'Details', 'Old_Artists', 'Old_Title', 'Old_FullName', 'Old_Album', 'Old_VideoId',
+               'Old_SetVideoId', 'Old_Playlist', 'Old_PlaylistId', 'New_Artists', 'New_Title', 'New_FullName',
+               'New_Album', 'New_VideoId', 'New_SetVideoId', 'New_Playlist', 'New_PlaylistId']
     create_csv_with_list_of_dict(output_dir, 'change_log', headers, csv_rows, True)
 
 
@@ -85,8 +85,8 @@ def create_match_results(previous_list, current_list):
             else:
                 unprocessed_tracks.append(track_to_find)
 
-    unmatched_tracks_from_current_file = flatten_list(current_list_buffer.values())
-    match_results.extend(create_match_results_for_unmatched_tracks_from_current_file(unmatched_tracks_from_current_file))
+    match_results.extend(create_match_results_for_unmatched_tracks_from_previous_file(unprocessed_tracks))
+    match_results.extend(create_match_results_for_unmatched_tracks_from_current_file(flatten_list(current_list_buffer.values())))
 
     return match_results
 
