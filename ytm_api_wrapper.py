@@ -117,36 +117,3 @@ def set_video_id_string_representation(song):
 
 def create_temporary_id_for_songs_without_one(playlist, counter):
     return 'missingId_from_' + playlist['id'] + '_' + str(counter)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

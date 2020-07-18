@@ -57,7 +57,7 @@ def export_track_matches_to_csv_file(matches):
 
 
 def create_match_results(previous_list, current_list):
-    unchanged_songs = []  # 5216
+    unchanged_songs = []
     added_songs = []
     removed_songs = []
     removed_from_playlist = []
