@@ -1,5 +1,5 @@
-from common import *
-from MatchResult import MatchResult
+from ytmusiclibtracker.common import *
+from ytmusiclibtracker.MatchResult import *
 
 
 def same_hash_matcher(track_to_find, buffer):

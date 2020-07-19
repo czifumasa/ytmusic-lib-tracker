@@ -3,7 +3,7 @@
 .idea/
 target/
 __pycache__/
-
+*.egg-info/
 *.iml
 
 #Login cookie

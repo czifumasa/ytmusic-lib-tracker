@@ -1,6 +1,6 @@
 from ytmusicapi import YTMusic
 
-from common import *
+from ytmusiclibtracker.common import *
 
 
 def open_api():

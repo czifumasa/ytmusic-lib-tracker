@@ -1,9 +1,9 @@
 import getopt
 from timeit import default_timer as timer
 
-from TrackRecord import TrackRecord
-from csv_wrapper import *
-from track_matcher import *
+from ytmusiclibtracker.TrackRecord import TrackRecord
+from ytmusiclibtracker.csv_wrapper import *
+from ytmusiclibtracker.track_matcher import *
 
 output_dir = None
 previous_export_file = None

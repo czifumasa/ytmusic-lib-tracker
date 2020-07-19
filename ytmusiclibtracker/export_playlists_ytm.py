@@ -1,7 +1,7 @@
 import getopt
 
-from csv_wrapper import *
-from ytm_api_wrapper import *
+from ytmusiclibtracker.csv_wrapper import *
+from ytmusiclibtracker.ytm_api_wrapper import *
 
 output_dir = None
 export_duplicates = False
@@ -49,7 +49,6 @@ def export_duplicated_songs():
 
 
 def export_all_songs():
-
     export_result = []
     export_result.extend(export_songs_from_library())
     export_result.extend(export_songs_from_playlists())

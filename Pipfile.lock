@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "8f47b91b2e8079d604404d7778b9a86c0dbad2f2ebaf73cb368511ada8fe5bb1"
+            "sha256": "420757de6aff0a467d98fc8e0f3bc5a57775aaeeb868ef4fd3b3d84cdc921248"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -51,7 +51,6 @@
                 "sha256:1d7a042116536098d05d599ef2b8616759f02985c85b4fef50c78a5aaf10822a",
                 "sha256:2b6aab710c2a1647e928e36d69c21e76b453cd455f4e2621000e54b2a9b8cce8"
             ],
-            "index": "pypi",
             "version": "==1.1.1"
         },
         "urllib3": {
@@ -67,8 +66,12 @@
                 "sha256:3cb2ec472eb2db7f3e57e1691653e6f1d833ca058c4f90b49a56902c59b4b8dd",
                 "sha256:3f1087155989155b104fd7cdf5b0149fd0f036d35912856d2ef1c99b9290a71e"
             ],
-            "index": "pypi",
+            "markers": "python_version >= '3.5'",
             "version": "==0.8.1"
+        },
+        "ytmusiclibtracer": {
+            "editable": true,
+            "path": "."
         }
     },
     "develop": {}

@@ -1,7 +1,7 @@
 import csv
 import io
 
-from common import *
+from ytmusiclibtracker.common import *
 
 
 def create_csv_with_list_of_dict(output_dir, filename, headers, list_of_rows, with_timestamp):
