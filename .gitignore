@@ -7,4 +7,4 @@ __pycache__/
 *.iml
 
 #Login cookie
-headers_auth.json
+*headers_auth.json

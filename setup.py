@@ -12,4 +12,5 @@ setup(
     description='Useful tools for youtube music. Exporting library to csv, tracking changes in library, summary of transfer from GPM',
     # We will also need a readme eventually
     # long_description=open('README.txt').read(),
+    entry_points={"console_scripts": ["start=ytmusiclibtracker.__main__:main"]},
 )
