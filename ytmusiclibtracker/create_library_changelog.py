@@ -1,43 +1,21 @@
-import getopt
 from timeit import default_timer as timer
 
-from TrackRecord import TrackRecord
-from csv_wrapper import *
-from track_matcher import *
+from ytmusiclibtracker.TrackRecord import TrackRecord
+from ytmusiclibtracker.csv_wrapper import *
+from ytmusiclibtracker.track_matcher import *
 
 output_dir = None
 previous_export_file = None
 current_export_file = None
 
-short_options = 'o:p:c:'
-long_options = ['output=', 'previous=', 'current=']
 
-# parse script arguments
-try:
-    arguments, values = getopt.getopt(sys.argv[1:], short_options, long_options)
-except getopt.error as err:
-    # Output error, and return with an error code
-    throw_error(str(err))
-    sys.exit(2)
+def initialize_global_params_from_config_file():
+    config = get_configuration_from_file('config.ini')
 
-# process given arguments
-for arg, val in arguments:
-    if arg in ('-p', '--previous'):
-        previous_export_file = val
-        log('Previous export result file is \'' + val + '\'')
-    if arg in ('-c', '--current'):
-        current_export_file = val
-        log('Current export result file is \'' + val + '\'')
-    elif arg in ("-o", "--output"):
-        output_dir = val
-        log('Output directory is \'' + val + '\'')
-
-if not output_dir:
-    throw_error('ERROR output directory is required')
-if not previous_export_file:
-    throw_error('ERROR previous export result file is required')
-if not current_export_file:
-    throw_error('ERROR current export result file is required')
+    global output_dir, previous_export_file, current_export_file
+    output_dir = config['OUTPUT']["output_dir"]
+    previous_export_file = config['INPUT']["previous_file"]
+    current_export_file = config['INPUT']["current_file"]
 
 
 def import_track_records_from_csv_file(filename):
@@ -86,7 +64,8 @@ def create_match_results(previous_list, current_list):
                 unprocessed_tracks.append(track_to_find)
 
     match_results.extend(create_match_results_for_unmatched_tracks_from_previous_file(unprocessed_tracks))
-    match_results.extend(create_match_results_for_unmatched_tracks_from_current_file(flatten_list(current_list_buffer.values())))
+    match_results.extend(
+        create_match_results_for_unmatched_tracks_from_current_file(flatten_list(current_list_buffer.values())))
 
     return match_results
 
@@ -99,13 +78,19 @@ def get_match_functions():
             similar_titles_matcher]
 
 
-previous_song_rows = import_track_records_from_csv_file(previous_export_file)
-current_song_rows = import_track_records_from_csv_file(current_export_file)
+def create_library_changelog():
+    initialize_global_params_from_config_file()
+    previous_song_rows = import_track_records_from_csv_file(previous_export_file)
+    current_song_rows = import_track_records_from_csv_file(current_export_file)
 
-start = timer()
-track_matches = create_match_results(previous_song_rows, current_song_rows)
-export_track_matches_to_csv_file(track_matches)
-end = timer()
-log('Creating changelog took: ' + str(end - start) + ' sec.')
+    start = timer()
+    track_matches = create_match_results(previous_song_rows, current_song_rows)
+    export_track_matches_to_csv_file(track_matches)
+    end = timer()
+    log('Creating changelog took: ' + str(end - start) + ' sec.')
 
-sys.exit()
+    sys.exit()
+
+
+if __name__ == "__main__":
+    create_library_changelog()

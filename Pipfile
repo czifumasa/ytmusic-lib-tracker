@@ -4,12 +4,10 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+pyinstaller = "*"
 
 [packages]
-ytmusicapi = "*"
-unidecode = "*"
-
+ytmusiclibtracer = {editable = true, path = "."}
 
 [requires]
 python_version = "3.8"
-

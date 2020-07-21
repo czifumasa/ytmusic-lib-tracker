@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "8f47b91b2e8079d604404d7778b9a86c0dbad2f2ebaf73cb368511ada8fe5bb1"
+            "sha256": "8d900618ff267728cf00617a4c54b62fbd4806e752153d65f2e7c90250ea3028"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -51,7 +51,6 @@
                 "sha256:1d7a042116536098d05d599ef2b8616759f02985c85b4fef50c78a5aaf10822a",
                 "sha256:2b6aab710c2a1647e928e36d69c21e76b453cd455f4e2621000e54b2a9b8cce8"
             ],
-            "index": "pypi",
             "version": "==1.1.1"
         },
         "urllib3": {
@@ -67,9 +66,48 @@
                 "sha256:3cb2ec472eb2db7f3e57e1691653e6f1d833ca058c4f90b49a56902c59b4b8dd",
                 "sha256:3f1087155989155b104fd7cdf5b0149fd0f036d35912856d2ef1c99b9290a71e"
             ],
-            "index": "pypi",
+            "markers": "python_version >= '3.5'",
             "version": "==0.8.1"
+        },
+        "ytmusiclibtracer": {
+            "editable": true,
+            "path": "."
         }
     },
-    "develop": {}
+    "develop": {
+        "altgraph": {
+            "hashes": [
+                "sha256:1f05a47122542f97028caf78775a095fbe6a2699b5089de8477eb583167d69aa",
+                "sha256:c623e5f3408ca61d4016f23a681b9adb100802ca3e3da5e718915a9e4052cebe"
+            ],
+            "version": "==0.17"
+        },
+        "future": {
+            "hashes": [
+                "sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d"
+            ],
+            "markers": "python_version >= '2.6' and python_version not in '3.0, 3.1, 3.2, 3.3'",
+            "version": "==0.18.2"
+        },
+        "pefile": {
+            "hashes": [
+                "sha256:a5d6e8305c6b210849b47a6174ddf9c452b2888340b8177874b862ba6c207645"
+            ],
+            "version": "==2019.4.18"
+        },
+        "pyinstaller": {
+            "hashes": [
+                "sha256:3730fa80d088f8bb7084d32480eb87cbb4ddb64123363763cf8f2a1378c1c4b7"
+            ],
+            "index": "pypi",
+            "version": "==3.6"
+        },
+        "pywin32-ctypes": {
+            "hashes": [
+                "sha256:24ffc3b341d457d48e8922352130cf2644024a4ff09762a2261fd34c36ee5942",
+                "sha256:9dc2d991b3479cc2df15930958b674a48a227d5361d413827a4cfd0b5876fc98"
+            ],
+            "version": "==0.2.0"
+        }
+    }
 }

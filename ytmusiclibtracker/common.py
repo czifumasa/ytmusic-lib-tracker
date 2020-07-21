@@ -4,6 +4,7 @@ import re
 import string
 import sys
 import time
+import configparser
 from datetime import datetime
 from difflib import SequenceMatcher
 
@@ -32,6 +33,12 @@ def log(message, nl=True):
     sys.stdout.write(message)
     if logfile:
         logfile.write(message)
+
+
+def get_configuration_from_file(filename):
+    config = configparser.ConfigParser()
+    config.read(filename)
+    return config
 
 
 def create_dir_if_not_exist(path_to_dir):

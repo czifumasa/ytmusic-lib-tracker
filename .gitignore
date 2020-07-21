@@ -3,8 +3,8 @@
 .idea/
 target/
 __pycache__/
-
+*.egg-info/
 *.iml
 
 #Login cookie
-headers_auth.json
+*headers_auth.json
