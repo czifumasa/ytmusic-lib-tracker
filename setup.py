@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    name='ytmusiclibtracer',
+    name='ytmusiclibtracker',
     url='https://github.com/czifumasa/ytmusic-lib-tracker',
     author='Łukasz Lenart',
     author_email='lukasz.lenart912@gmail.com',
