@@ -7,7 +7,7 @@ verify_ssl = true
 pyinstaller = "*"
 
 [packages]
-ytmusiclibtracer = {editable = true, path = "."}
+ytmusiclibtracker = {editable = true, path = "."}
 
 [requires]
 python_version = "3.8"
