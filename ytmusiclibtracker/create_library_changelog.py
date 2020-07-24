@@ -80,6 +80,9 @@ def get_match_functions():
 
 def create_library_changelog():
     initialize_global_params_from_config_file()
+    # setup the output directory, create it if needed
+    create_dir_if_not_exist(output_dir)
+
     previous_song_rows = import_track_records_from_csv_file(previous_export_file)
     current_song_rows = import_track_records_from_csv_file(current_export_file)
 
