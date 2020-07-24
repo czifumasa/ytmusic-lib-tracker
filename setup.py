@@ -6,7 +6,7 @@ setup(
     author='Łukasz Lenart',
     author_email='lukasz.lenart912@gmail.com',
     packages=['ytmusiclibtracker'],
-    install_requires=['ytmusicapi==0.8.1', 'unidecode'],
+    install_requires=['ytmusicapi >=0.9.1', 'unidecode'],
     version='0.1',
     license='MIT',
     description='Useful tools for youtube music. Exporting library to csv, tracking changes in library, summary of transfer from GPM',
