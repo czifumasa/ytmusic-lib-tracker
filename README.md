@@ -61,14 +61,14 @@ Then whenever you'd like to work with application, open shell with activated vir
 To export full content of your YTMusic library as well as all your playlists run:
 
  ```
- python ytmusiclibtracker/export_playlists_ytm.py 
+ ytmlt-export
  ```
 
 ##### Listing duplicates 
 
 To export list of duplicated tracks on your playlists run:
  ```
- python ytmusiclibtracker/export_playlists_ytm.py -d
+ ytmlt-duplicates
  ```
 
 ##### Tracking changes in user's library
@@ -81,7 +81,7 @@ Open `config.ini` file and provide output directory, previous and current file.
  Then run:
 
  ```
- python ytmusiclibtracker.py
+ ytmlt-changelog
  ```
 
 ## Acknowledgements
