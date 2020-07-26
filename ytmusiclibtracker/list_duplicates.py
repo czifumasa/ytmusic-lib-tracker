@@ -9,7 +9,7 @@ def initialize_global_params_from_config_file():
     config = get_configuration_from_file('config.ini')
 
     global output_dir
-    output_dir = config['OUTPUT']["output_dir"]
+    output_dir = config['DUPLICATES']["output_dir_duplicates"]
 
 
 def export_duplicated_songs():

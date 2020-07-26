@@ -9,7 +9,7 @@ def initialize_global_params_from_config_file():
     config = get_configuration_from_file('config.ini')
 
     global output_dir
-    output_dir = config['OUTPUT']["output_dir"]
+    output_dir = config['EXPORT']["output_dir_export"]
 
 
 def export_all_songs():
