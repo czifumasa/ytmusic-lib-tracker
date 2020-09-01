@@ -11,7 +11,7 @@ def open_api():
 
 
 def get_all_songs_from_my_library(api):
-    library_songs = api.get_library_songs(100000)
+    library_songs = api.get_library_songs(100000, True)
 
     log('\nFetched ' + str(len(library_songs)) + ' tracks from Library')
     return library_songs
@@ -19,7 +19,7 @@ def get_all_songs_from_my_library(api):
 
 # returns [{id: playlistId, name: playlistName},...]
 def get_my_playlist_ids_and_names(api):
-    my_playlists = api.get_library_playlists(200)
+    my_playlists = api.get_library_playlists(1000)
     playlist_ids = []
     for playlist in my_playlists:
         playlist_ids.append({'id': playlist['playlistId'], 'name': playlist['title']})
@@ -28,8 +28,10 @@ def get_my_playlist_ids_and_names(api):
 
 def get_songs_from_playlist(api, playlist_id):
     playlist = api.get_playlist(playlist_id, 5000)
-
     log('\nFetched ' + str(len(playlist['tracks'])) + ' tracks from \'' + playlist['title'] + '\' playlist')
+
+    if playlist['trackCount'] != len(playlist['tracks']):
+        print('Invalid Response: ' + str(len(playlist['tracks'])) + '/' + str(playlist['trackCount']))
     return playlist['tracks']
 
 
