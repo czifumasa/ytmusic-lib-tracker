@@ -23,7 +23,7 @@ def find_and_set_previous_and_current_file(config):
     auto_detect = get_int_value_from_config(config, 'CHANGELOG', "auto_detect")
     if auto_detect > 0:
         auto_detect_dir = config['CHANGELOG']["auto_detect_dir"]
-        list_of_filenames = get_list_of_csv_files_with_timestamp_from_dir(auto_detect_dir, 'export')
+        list_of_filenames = get_list_of_csv_files_with_timestamp_from_dir(auto_detect_dir, 'exported_songs')
         if len(list_of_filenames) >= 2:
             list_of_filenames.sort(reverse=True)
             current_export_file = auto_detect_dir+'\\'+list_of_filenames[0]

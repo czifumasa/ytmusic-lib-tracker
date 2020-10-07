@@ -1,11 +1,11 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "d40aa9442936fba22688abd96de477f9aaca3bdb9494a298545209e9a4c7da60"
+            "sha256": "01e4f8e4e324a2e7e8adfc9694f299f8ac4bf4f4b743287999026b4e4cb0d1e1"
         },
         "pipfile-spec": 6,
         "requires": {
-            "python_version": "3.8"
+            "python_version": "3.9"
         },
         "sources": [
             {
@@ -63,11 +63,11 @@
         },
         "ytmusicapi": {
             "hashes": [
-                "sha256:01c5ca8b6eb8161c2a2c86eca85614c39a689e737fca7e799446f8b9288ecbec",
-                "sha256:9b411210a33aed46382a0dc87fa37aa7661cb9d42947b5a65d0d25c280de34ab"
+                "sha256:ede536ff754a7177802df52d14ad78cfc446ba7eab07e770dd0d59072371596b",
+                "sha256:fb1c4ebffa57f25eb8c638944195190675d1068033e1f64bb3ffaa2999c5a986"
             ],
             "markers": "python_version >= '3.5'",
-            "version": "==0.9.1"
+            "version": "==0.10.1"
         },
         "ytmusiclibtracker": {
             "editable": true,
@@ -93,20 +93,29 @@
             "hashes": [
                 "sha256:a5d6e8305c6b210849b47a6174ddf9c452b2888340b8177874b862ba6c207645"
             ],
+            "markers": "sys_platform == 'win32'",
             "version": "==2019.4.18"
         },
         "pyinstaller": {
             "hashes": [
-                "sha256:3730fa80d088f8bb7084d32480eb87cbb4ddb64123363763cf8f2a1378c1c4b7"
+                "sha256:970beb07115761d5e4ec317c1351b712fd90ae7f23994db914c633281f99bab0"
             ],
             "index": "pypi",
-            "version": "==3.6"
+            "version": "==4.0"
+        },
+        "pyinstaller-hooks-contrib": {
+            "hashes": [
+                "sha256:a5fd45a920012802e3f2089e1d3501ef2f49265dfea8fc46c3310f18e3326c91",
+                "sha256:c382f3ac1a42b45cfecd581475c36db77da90e479b2f5bcb6d840d21fa545114"
+            ],
+            "version": "==2020.9"
         },
         "pywin32-ctypes": {
             "hashes": [
                 "sha256:24ffc3b341d457d48e8922352130cf2644024a4ff09762a2261fd34c36ee5942",
                 "sha256:9dc2d991b3479cc2df15930958b674a48a227d5361d413827a4cfd0b5876fc98"
             ],
+            "markers": "sys_platform == 'win32'",
             "version": "==0.2.0"
         }
     }
