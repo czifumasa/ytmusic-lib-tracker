@@ -78,7 +78,6 @@ def export_songs(songs, playlist):
     for song in songs:
         song_row = [song_artists_string_representation(song['artists']),
                     song['title'],
-                    song_string_representation(song),
                     song_album_string_representation(song['album']),
                     song['videoId'],
                     set_video_id_string_representation(song),

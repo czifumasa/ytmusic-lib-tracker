@@ -41,16 +41,19 @@ def find_and_set_previous_and_current_file(config):
 
 
 def import_track_records_from_csv_file(filename):
-    # TODO remove library filter
-    track_records = [TrackRecord(csv_row) for csv_row in get_list_of_rows_from_file(filename) if
-                     TrackRecord(csv_row).playlist_name != 'Library']
-    return track_records
+
+    csv_rows = get_list_of_rows_from_file(filename)
+
+    if csv_rows:
+        convert_fnc = get_convert_function_by_headers(csv_rows[0])
+        return [TrackRecord(convert_fnc(csv_row)) for csv_row in csv_rows[1:]]
+    return []
 
 
 def export_track_matches_to_csv_file(matches):
     csv_rows = [track_match.serialize_to_csv_row() for track_match in matches]
-    headers = ['Status', 'Details', 'Old_Artists', 'Old_Title', 'Old_FullName', 'Old_Album', 'Old_VideoId',
-               'Old_SetVideoId', 'Old_Playlist', 'Old_PlaylistId', 'New_Artists', 'New_Title', 'New_FullName',
+    headers = ['Status', 'Details', 'Old_Artists', 'Old_Title', 'Old_Album', 'Old_VideoId',
+               'Old_SetVideoId', 'Old_Playlist', 'Old_PlaylistId', 'New_Artists', 'New_Title',
                'New_Album', 'New_VideoId', 'New_SetVideoId', 'New_Playlist', 'New_PlaylistId']
     create_csv_with_list_of_dict(output_dir, 'change_log', headers, csv_rows, True)
 

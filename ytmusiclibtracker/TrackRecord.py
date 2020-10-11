@@ -9,18 +9,18 @@ class TrackRecord:
     def __init__(self, song_row):
         self.artists = song_row[0].strip()
         self.title = song_row[1].strip()
-        self.full_name = song_row[2].strip()
-        self.album = song_row[3].strip()
-        self.video_id = song_row[4].strip()
-        self.set_video_id = song_row[5].strip()
-        self.playlist_name = song_row[6].strip()
-        self.playlist_id = song_row[7].strip()
+        self.album = song_row[2].strip()
+        self.video_id = song_row[3].strip()
+        self.set_video_id = song_row[4].strip()
+        self.playlist_name = song_row[5].strip()
+        self.playlist_id = song_row[6].strip()
+        self.full_name = self.artists + ' - ' + self.title
 
     def __eq__(self, other):
         if not isinstance(other, TrackRecord):
             # don't attempt to compare against unrelated types
             return NotImplemented
-        if not self._is_equal_by_playlist(other):
+        if not self.is_equal_by_playlist(other):
             return False
         if self.full_name == other.full_name:
             return True
@@ -79,5 +79,5 @@ class TrackRecord:
         return False
 
     def serialize_to_csv_row(self):
-        return [self.artists, self.title, self.full_name, self.album, self.video_id, self.set_video_id,
+        return [self.artists, self.title, self.album, self.video_id, self.set_video_id,
                 self.playlist_name, self.playlist_id]

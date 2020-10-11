@@ -17,7 +17,7 @@ def export_all_songs():
     export_result.extend(export_songs_from_library())
     export_result.extend(export_songs_from_playlists())
 
-    headers = ['Artists', 'Title', 'FullName', 'Album', 'VideoId', 'SetVideoId', 'Playlist', 'PlaylistId']
+    headers = ['Artists', 'Title', 'Album', 'VideoId', 'SetVideoId', 'Playlist', 'PlaylistId']
     create_csv_with_list_of_dict(output_dir, 'exported_songs', headers, export_result, True)
 
 
