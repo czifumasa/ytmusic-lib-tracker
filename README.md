@@ -75,14 +75,23 @@ To export list of duplicated tracks on your playlists run:
 
 When you have at least two export results, you can track any changes in your library.
 Sometimes some songs in your library may no longer be available on youtube. This feature will help in localizing unavailable songs. You can also 
- see what you added and removed since the last export.
- 
-Open `config.ini` file and provide output directory, previous and current file.
- Then run:
+see what you added and removed since the last export. Method supports export results 
+from `ytmlt-export` and [gmusis-playlist.js](https://github.com/soulfx/gmusic-playlist.js).
+
+ To create changelog run:
 
  ```
  ytmlt-changelog
  ```
+ 
+With default behaviour, the last two export files from `ytmlt-export` will be used as previous and current.
+If you want to compare specific files. open `config.ini` file and provide output directory, previous and current file.
+
+If you want to compare export results from GPM and see what happened after transferring your library to YTM,
+you can create csv file with exported playlists using [gmusis-playlist.js](https://github.com/soulfx/gmusic-playlist.js).
+Next, move that file to directory with export results (by default it's `/target/export`). 
+Then open `config.ini` and replace previous_file option with the path to your CSV file. 
+Finally, you can run `ytmlt-changelog`.
 
 ## Acknowledgements
 
