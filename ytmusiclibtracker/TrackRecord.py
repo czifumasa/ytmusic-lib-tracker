@@ -27,7 +27,7 @@ class TrackRecord:
         return False
 
     def __hash__(self):
-        return hash((self.full_name, self.playlist_name))
+        return hash((get_comparable_text(self.full_name.lower()), get_comparable_text(self.playlist_name.lower())))
 
     def is_equal_by_id(self, other):
         if self.is_equal_by_playlist(other) and self.video_id and other.video_id:
@@ -44,10 +44,10 @@ class TrackRecord:
 
     def is_similar_by_artists_and_titles(self, other):
         if self.is_equal_by_playlist(other):
-            processed_artists_self = get_comparable_text(self.artists)
-            processed_artists_other = get_comparable_text(other.artists)
-            processed_title_self = get_comparable_text(self.title)
-            processed_title_other = get_comparable_text(other.title)
+            processed_artists_self = get_comparable_text(self.artists, True)
+            processed_artists_other = get_comparable_text(other.artists, True)
+            processed_title_self = get_comparable_text(self.title, True)
+            processed_title_other = get_comparable_text(other.title, True)
             if are_two_texts_similar(processed_artists_self, processed_artists_other, 0.80) \
                     and are_two_texts_similar(processed_title_self, processed_title_other, 0.95):
                 return True
@@ -78,6 +78,16 @@ class TrackRecord:
             return True
         return False
 
+    def is_equal_by_liked_playlist(self, other):
+        if self.is_equal_by_title(other) and \
+                self.is_equal_by_artists(other) and \
+                self.playlist_name in [self.YOUR_LIKES, self.THUMBS_UP] and \
+                other.playlist_name in [self.YOUR_LIKES, self.THUMBS_UP]:
+            return True
+        return False
+
     def serialize_to_csv_row(self):
         return [self.artists, self.title, self.album, self.video_id, self.set_video_id,
                 self.playlist_name, self.playlist_id]
+
+

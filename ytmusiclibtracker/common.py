@@ -98,9 +98,15 @@ def current_date_time_to_file_name_string():
     return datetime.today().strftime('%Y_%m_%d_%H_%M_%S')
 
 
-def get_comparable_text(text):
-    # omit text in brackets
-    t = re.sub(r'[\(\[].*?[\)\]]', '', text)
+def get_comparable_text(text, omit_brackets=False):
+
+    t = text
+
+    if omit_brackets:
+        # omit text in brackets
+        t = re.sub(r'[\(\[].*?[\)\]]', '', text)
+    # replace apostrophe
+    t = t.replace('’', '\'')
     # omit punctuation
     t = t.translate(str.maketrans('', '', string.punctuation))
     # trim
@@ -109,6 +115,7 @@ def get_comparable_text(text):
     t = t.lower()
     # normalize by removing diacritics
     t = unidecode.unidecode(t)
+
     return t
 
 

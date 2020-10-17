@@ -15,7 +15,7 @@ def same_hash_matcher(track_to_find, buffer):
 def thumbs_up_your_likes_matcher(track_to_find, buffer):
     matches = []
     for track in flatten_list(buffer.values()):
-        if track.is_equal_by_title(track_to_find) and track.is_equal_by_artists(track_to_find):
+        if track.is_equal_by_liked_playlist(track_to_find):
             matches.append(MatchResult(track_to_find, track, 'MODIFIED', '\'Thumbs Up\' playlist is now \'Your Likes\' playlist'))
     return matches
 
@@ -45,7 +45,7 @@ def similar_titles_matcher(track_to_find, buffer):
 
 
 def create_match_results_for_unmatched_tracks_from_previous_file(unmatched_tracks):
-    return [MatchResult(None, track, 'REMOVED', 'No match from current file found. Probably track has been removed from the playlist recently') for track in unmatched_tracks]
+    return [MatchResult(track, None, 'REMOVED', 'No match from current file found. Probably track has been removed from the playlist recently') for track in unmatched_tracks]
 
 
 def create_match_results_for_unmatched_tracks_from_current_file(unmatched_tracks):

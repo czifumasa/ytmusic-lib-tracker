@@ -52,10 +52,20 @@ def import_track_records_from_csv_file(filename):
 
 def export_track_matches_to_csv_file(matches):
     csv_rows = [track_match.serialize_to_csv_row() for track_match in matches]
-    headers = ['Status', 'Details', 'Old_Artists', 'Old_Title', 'Old_Album', 'Old_VideoId',
-               'Old_SetVideoId', 'Old_Playlist', 'Old_PlaylistId', 'New_Artists', 'New_Title',
-               'New_Album', 'New_VideoId', 'New_SetVideoId', 'New_Playlist', 'New_PlaylistId']
+    csv_rows = sorted(csv_rows, key=get_sort_function_for_track_matches())
+    headers = ['Status', 'Details',
+               'Old_Artists', 'New_Artists',
+               'Old_Title', 'New_Title',
+               'Old_Album', 'New_Album',
+               'Old_Playlist', 'New_Playlist',
+               'Old_VideoId', 'New_VideoId',
+               'Old_SetVideoId', 'New_SetVideoId',
+               'Old_PlaylistId', 'New_PlaylistId']
     create_csv_with_list_of_dict(output_dir, 'change_log', headers, csv_rows, True)
+
+
+def get_sort_function_for_track_matches():
+    return lambda row: (row[2] if row[2] else row[3], row[4] if row[4] else row[5], row[8] if row[8] else row[9])
 
 
 def create_match_results(previous_list, current_list):
