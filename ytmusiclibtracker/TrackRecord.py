@@ -15,6 +15,7 @@ class TrackRecord:
         self.set_video_id = song_row[4].strip()
         self.playlist_name = song_row[5].strip()
         self.playlist_id = song_row[6].strip()
+        self.is_available = song_row[7].strip()
         self.full_name = get_comparable_text(self.artists + ' - ' + self.title)
 
     def __eq__(self, other):
@@ -28,7 +29,7 @@ class TrackRecord:
         return False
 
     def __hash__(self):
-        return hash((self.full_name, get_comparable_text(self.playlist_name)))
+        return hash((self.full_name, get_comparable_text(self.playlist_name), self.is_available))
 
     def is_equal_by_id(self, other):
         if self.is_equal_by_playlist(other) and self.video_id and other.video_id:
@@ -69,6 +70,8 @@ class TrackRecord:
         return False
 
     def is_equal_by_playlist(self, other):
+        if self.is_available != other.is_available:
+            return False
         if self.playlist_id and other.playlist_id:
             return self.playlist_id == other.playlist_id
         elif self.playlist_name and other.playlist_name:
@@ -82,6 +85,11 @@ class TrackRecord:
         if get_comparable_text(self.album) == get_comparable_text(other.album):
             return True
         return False
+
+    def is_equal_ignoring_availability(self, other):
+        self_hash = hash((self.full_name, get_comparable_text(self.playlist_name)))
+        other_hash = hash((other.full_name, get_comparable_text(other.playlist_name)))
+        return self_hash == other_hash
 
     def is_equal_by_liked_playlist(self, other):
         if self.is_equal_by_full_name(other) and \

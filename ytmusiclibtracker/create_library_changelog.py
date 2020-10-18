@@ -102,6 +102,7 @@ def create_match_results(previous_list, current_list):
 
 def get_match_functions():
     return [same_hash_matcher,
+            unavailable_playlist_songs_matcher,
             thumbs_up_your_likes_matcher,
             uploaded_to_library_matcher,
             similar_artists_matcher,

@@ -12,6 +12,14 @@ def same_hash_matcher(track_to_find, buffer):
     return matches
 
 
+def unavailable_playlist_songs_matcher(track_to_find, buffer):
+    matches = []
+    for track in flatten_list(buffer.values()):
+        if track.is_equal_ignoring_availability(track_to_find):
+            matches.append(MatchResult(track_to_find, track, 'REMOVED', 'Song is greyed out and unavailable'))
+    return matches
+
+
 def thumbs_up_your_likes_matcher(track_to_find, buffer):
     matches = []
     for track in flatten_list(buffer.values()):
@@ -57,6 +65,10 @@ def create_match_results_for_unmatched_tracks_from_previous_file(unmatched_track
 
 
 def create_match_results_for_unmatched_tracks_from_current_file(unmatched_tracks):
-    return [MatchResult(track, None, 'ADDED', 'No match from previous file found. Probably track has been added recently') for track in unmatched_tracks]
+    get_match_result = lambda track: \
+        MatchResult(track, None, 'ADDED', 'No match from previous file found. Probably track has been added recently') if track.is_available == '1' else \
+        MatchResult(track, None, 'REMOVED', 'Song is greyed out and unavailable')
+
+    return [get_match_result(track) for track in unmatched_tracks]
 
 

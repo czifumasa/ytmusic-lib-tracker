@@ -28,10 +28,12 @@ def get_my_playlist_ids_and_names(api):
 
 def get_songs_from_playlist(api, playlist_id):
     playlist = api.get_playlist(playlist_id, 5000)
-    log('\nFetched ' + str(len(playlist['tracks'])) + ' tracks from \'' + playlist['title'] + '\' playlist')
 
     if playlist['trackCount'] != len(playlist['tracks']):
-        print('Invalid Response: ' + str(len(playlist['tracks'])) + '/' + str(playlist['trackCount']))
+        print('Invalid Response: ' + str(len(playlist['tracks'])) + '/' + str(playlist['trackCount']) + ' ,retrying...' )
+        playlist = api.get_playlist(playlist_id, 5000)
+
+    log('\nFetched ' + str(len(playlist['tracks'])) + ' tracks from \'' + playlist['title'] + '\' playlist')
     return playlist['tracks']
 
 
@@ -91,7 +93,8 @@ def export_songs(songs, playlist):
                     song['videoId'],
                     set_video_id_string_representation(song),
                     playlist['name'],
-                    playlist['id']]
+                    playlist['id'],
+                    song_availability_status(song)]
         export_result.append(song_row)
     return export_result
 
@@ -126,6 +129,13 @@ def song_album_string_representation(album):
 
 def set_video_id_string_representation(song):
     return song['setVideoId'] if 'setVideoId' in song else None
+
+
+def song_availability_status(song):
+    if 'isGreyedOut' in song:
+        if song['isGreyedOut']:
+            return '0'
+    return '1'
 
 
 def create_temporary_id_for_songs_without_one(playlist, counter):

@@ -45,10 +45,10 @@ def get_gpm_export_headers():
 
 
 def get_ytmlt_export_headers():
-    return ['Artists', 'Title', 'Album', 'VideoId', 'SetVideoId', 'Playlist', 'PlaylistId']
+    return ['Artists', 'Title', 'Album', 'VideoId', 'SetVideoId', 'Playlist', 'PlaylistId', 'IsAvailable']
 
 
 def convert_gpm_to_ytmlt_row(gpm_rom):
-    expected_order = [1, 0, 2, -1, -1, 12, -1]
+    expected_order = [1, 0, 2, -1, -1, 12, -1, -1]
     ytmlt_row = [gpm_rom[i] if i >= 0 else '' for i in expected_order]
     return ytmlt_row

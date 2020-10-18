@@ -19,7 +19,7 @@ def export_all_songs():
     export_result.extend(export_uploaded_songs())
     export_result.extend(export_songs_from_playlists())
 
-    headers = ['Artists', 'Title', 'Album', 'VideoId', 'SetVideoId', 'Playlist', 'PlaylistId']
+    headers = get_ytmlt_export_headers()
     create_csv_with_list_of_dict(output_dir, 'exported_songs', headers, export_result, True)
 
 
