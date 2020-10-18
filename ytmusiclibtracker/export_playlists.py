@@ -14,7 +14,9 @@ def initialize_global_params_from_config_file():
 
 def export_all_songs():
     export_result = []
+
     export_result.extend(export_songs_from_library())
+    export_result.extend(export_uploaded_songs())
     export_result.extend(export_songs_from_playlists())
 
     headers = ['Artists', 'Title', 'Album', 'VideoId', 'SetVideoId', 'Playlist', 'PlaylistId']
@@ -24,6 +26,11 @@ def export_all_songs():
 def export_songs_from_library():
     library_songs = get_all_songs_from_my_library(api)
     return export_songs(library_songs, {'id': 'Library', 'name': 'Library'})
+
+
+def export_uploaded_songs():
+    uploaded_songs = get_all_uploaded_songs(api)
+    return export_songs(uploaded_songs, {'id': 'Uploaded', 'name': 'Uploaded'})
 
 
 def export_songs_from_playlists():

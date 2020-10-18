@@ -35,6 +35,13 @@ def get_songs_from_playlist(api, playlist_id):
     return playlist['tracks']
 
 
+def get_all_uploaded_songs(api):
+    uploaded_songs = api.get_library_upload_songs(100000)
+    log('\nFetched ' + str(len(uploaded_songs)) + ' uploaded tracks')
+
+    return uploaded_songs
+
+
 # returns [id1:[song1,song2,song3], id2: [song4],...]
 def get_songs_from_playlist_grouped_by_id(api, playlist_id):
     playlist = get_songs_from_playlist(api, playlist_id)
@@ -78,7 +85,7 @@ def get_list_of_duplicated_songs(song_id, songs_list):
 def export_songs(songs, playlist):
     export_result = []
     for song in songs:
-        song_row = [song_artists_string_representation(song['artists']),
+        song_row = [song_artists_string_representation(song),
                     song['title'],
                     song_album_string_representation(song['album']),
                     song['videoId'],
@@ -90,7 +97,7 @@ def export_songs(songs, playlist):
 
 
 def song_string_representation(song):
-    artists = song_artists_string_representation(song['artists'])
+    artists = song_artists_string_representation(song)
     title = song['title']
 
     if artists:
@@ -98,11 +105,16 @@ def song_string_representation(song):
     return ' - ' + title
 
 
-def song_artists_string_representation(artists):
-    if artists:
-        artists_names = [artist['name'] for artist in artists]
-        return ','.join(artists_names)
-    return None
+def song_artists_string_representation(song):
+    if 'artists' in song and song['artists']:
+        artists = song['artists']
+    elif 'artist' in song and song['artist']:
+        artists = song['artist']
+    else:
+        return None
+
+    artists_names = [artist['name'] for artist in artists]
+    return ','.join(artists_names)
 
 
 def song_album_string_representation(album):

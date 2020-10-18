@@ -54,13 +54,13 @@ def export_track_matches_to_csv_file(matches):
     csv_rows = [track_match.serialize_to_csv_row() for track_match in matches]
     csv_rows = sorted(csv_rows, key=get_sort_function_for_track_matches())
     headers = ['Status', 'Details',
-               'Old_Artists', 'New_Artists',
-               'Old_Title', 'New_Title',
-               'Old_Album', 'New_Album',
-               'Old_Playlist', 'New_Playlist',
-               'Old_VideoId', 'New_VideoId',
-               'Old_SetVideoId', 'New_SetVideoId',
-               'Old_PlaylistId', 'New_PlaylistId']
+               'Artists', 'Matched_Artists',
+               'Title', 'Matched_Title',
+               'Album', 'Matched_Album',
+               'Playlist', 'Matched_Playlist',
+               'VideoId', 'Matched_VideoId',
+               'SetVideoId', 'Matched_SetVideoId',
+               'PlaylistId', 'Matched_PlaylistId']
     create_csv_with_list_of_dict(output_dir, 'change_log', headers, csv_rows, True)
 
 
@@ -69,21 +69,16 @@ def get_sort_function_for_track_matches():
 
 
 def create_match_results(previous_list, current_list):
-    unchanged_songs = []
-    added_songs = []
-    removed_songs = []
-    removed_from_playlist = []
-    not_existing_songs = []
-    renamed_songs = []
+
     song_is_private = []
     duplicates = []
     match_results = []
 
-    unprocessed_tracks = list(previous_list)
+    unprocessed_tracks = set(previous_list)
     current_list_buffer = group_list_by_function(current_list, lambda track: hash(track))
 
     for matcher in get_match_functions():
-        old_list_buffer = list(unprocessed_tracks)
+        old_list_buffer = set(unprocessed_tracks)
         unprocessed_tracks = []
         for track_to_find in old_list_buffer:
             matches = matcher(track_to_find, current_list_buffer)
@@ -108,6 +103,7 @@ def create_match_results(previous_list, current_list):
 def get_match_functions():
     return [same_hash_matcher,
             thumbs_up_your_likes_matcher,
+            uploaded_to_library_matcher,
             similar_artists_matcher,
             same_id_matcher,
             similar_titles_matcher]
