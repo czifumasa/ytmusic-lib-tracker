@@ -107,7 +107,7 @@ def get_match_functions():
             uploaded_to_library_matcher,
             similar_artists_matcher,
             same_id_matcher,
-            similar_titles_matcher]
+            similar_metadata_matcher]
 
 
 def create_library_changelog():

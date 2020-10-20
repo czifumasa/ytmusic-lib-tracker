@@ -3,9 +3,9 @@ from ytmusiclibtracker.MatchResult import *
 
 
 def same_hash_matcher(track_to_find, buffer):
-    comp_hash = hash(track_to_find)
     matches = []
-    if comp_hash in buffer:
+    comp_hash = hash(track_to_find)
+    if comp_hash in buffer and track_to_find.is_available == '1':
         matches.extend(
             [MatchResult(track_to_find, track, 'UNCHANGED', '') for track in
              buffer[comp_hash]])  # maybe handle play_list rename
@@ -52,7 +52,7 @@ def same_id_matcher(track_to_find, buffer):
     return matches
 
 
-def similar_titles_matcher(track_to_find, buffer):
+def similar_metadata_matcher(track_to_find, buffer):
     matches = []
     for track in flatten_list(buffer.values()):
         if track.is_similar_by_artists_and_titles(track_to_find):

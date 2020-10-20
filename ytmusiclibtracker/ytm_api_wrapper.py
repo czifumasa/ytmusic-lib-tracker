@@ -132,9 +132,9 @@ def set_video_id_string_representation(song):
 
 
 def song_availability_status(song):
-    if 'isGreyedOut' in song:
-        if song['isGreyedOut']:
-            return '0'
+    if 'isAvailable' in song:
+        if not song['isAvailable']:
+            return 0
     return '1'
 
 

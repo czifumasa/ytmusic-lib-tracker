@@ -15,7 +15,7 @@ class TrackRecord:
         self.set_video_id = song_row[4].strip()
         self.playlist_name = song_row[5].strip()
         self.playlist_id = song_row[6].strip()
-        self.is_available = song_row[7].strip()
+        self.is_available = song_row[7].strip() if song_row[7].strip() != '' else '1'
         self.full_name = get_comparable_text(self.artists + ' - ' + self.title)
 
     def __eq__(self, other):
@@ -72,12 +72,12 @@ class TrackRecord:
     def is_equal_by_playlist(self, other):
         if self.is_available != other.is_available:
             return False
-        if self.playlist_id and other.playlist_id:
-            return self.playlist_id == other.playlist_id
         elif self.playlist_name and other.playlist_name:
             if self.playlist_name == other.playlist_name:
                 return True
             elif self.playlist_name in [self.YOUR_LIKES, self.THUMBS_UP] and other.playlist_name in [self.YOUR_LIKES, self.THUMBS_UP]:
+                return True
+            elif self.playlist_name in [self.LIBRARY, self.UPLOADED] and other.playlist_name in [self.LIBRARY, self.UPLOADED]:
                 return True
         return False
 
