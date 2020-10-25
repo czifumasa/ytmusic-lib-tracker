@@ -16,7 +16,10 @@ def unavailable_playlist_songs_matcher(track_to_find, buffer):
     matches = []
     for track in flatten_list(buffer.values()):
         if track.is_equal_ignoring_availability(track_to_find):
-            matches.append(MatchResult(track_to_find, track, 'REMOVED', 'Song is greyed out and unavailable'))
+            if track.is_available == '0':
+                matches.append(MatchResult(track_to_find, track, 'REMOVED', 'Song is greyed out and unavailable'))
+            else:
+                matches.append(MatchResult(track_to_find, track, 'MODIFIED', 'Replaced unavailable song with a new version'))
     return matches
 
 
