@@ -1,4 +1,5 @@
-from setuptools import setup
+import sys
+from cx_Freeze import setup, Executable
 
 setup(
     name='ytmusiclibtracker',
@@ -14,5 +15,6 @@ setup(
     long_description=open('README.md').read(),
     entry_points={"console_scripts": ["ytmlt-export=ytmusiclibtracker.__main__:export",
                                       "ytmlt-duplicates=ytmusiclibtracker.__main__:duplicates",
-                                      "ytmlt-changelog=ytmusiclibtracker.__main__:changelog"]}
+                                      "ytmlt-changelog=ytmusiclibtracker.__main__:changelog"]},
+    executables=[Executable("ytmusiclibtracker.py", base="console")]
 )
