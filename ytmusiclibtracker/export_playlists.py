@@ -5,6 +5,11 @@ output_dir = None
 api = None
 
 
+def validate_config_file():
+    if not os.path.isfile('config.ini'):
+        throw_error('Configuration file not found. Please make sure that \'config.ini\' is in the main directory.')
+
+
 def initialize_global_params_from_config_file():
     config = get_configuration_from_file('config.ini')
 
@@ -13,6 +18,7 @@ def initialize_global_params_from_config_file():
 
 
 def export_all_songs():
+    validate_config_file()
     global api
     api = open_api()
     export_result = []

@@ -1,12 +1,24 @@
+import platform
+
 from ytmusicapi import YTMusic
 
 from ytmusiclibtracker.common import *
 
 
 def open_api():
-    log('Logging into YouTube Music...')
+    log('Logging into YouTube Music...', True)
+    if not os.path.isfile('headers_auth.json'):
+        headers_raw = []
+        log('Please paste here the request headers from your browser and then press \'Enter\' twice to continue:')
+        while True:
+            line = input()
+            if line:
+                headers_raw.append(line+'\n')
+            else:
+                break
+        YTMusic.setup(filepath='headers_auth.json', headers_raw=''.join(headers_raw))
     api = YTMusic('headers_auth.json')
-    log('Login Successful.')
+    log('Login Successful.', True)
     return api
 
 
@@ -32,7 +44,7 @@ def get_songs_from_playlist(api, playlist_id):
 
     log('\nFetching tracks from \'' + playlist['title'] + '\' playlist...')
     if playlist['trackCount'] != len(playlist['tracks']):
-        print('Invalid Response: ' + str(len(playlist['tracks'])) + '/' + str(playlist['trackCount']) + ' ,retrying...' )
+        log('Invalid Response: ' + str(len(playlist['tracks'])) + '/' + str(playlist['trackCount']) + ', retrying...' )
         playlist = api.get_playlist(playlist_id, 5000)
 
     log('Fetched ' + str(len(playlist['tracks'])) + ' tracks from \'' + playlist['title'] + '\' playlist')

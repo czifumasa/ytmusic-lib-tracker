@@ -4,7 +4,6 @@ import os
 import re
 import string
 import sys
-import time
 from datetime import datetime
 from difflib import SequenceMatcher
 
@@ -27,7 +26,7 @@ def close_log():
         logfile.close()
 
 
-def log(message, nl=True):
+def log(message, nl=False):
     if nl:
         message += os.linesep
     sys.stdout.write(message)
@@ -65,9 +64,7 @@ def get_list_of_csv_files_with_timestamp_from_dir(path_to_dir, filename_prefix):
 
 
 def throw_error(message):
-    log(message)
-    time.sleep(3)
-    exit()
+    raise Exception(message)
 
 
 def flatten_list(list_to_flatten):
