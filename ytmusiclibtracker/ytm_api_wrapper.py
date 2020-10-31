@@ -11,9 +11,10 @@ def open_api():
 
 
 def get_all_songs_from_my_library(api):
+    log('\nFetching tracks from library, it may take a while...')
     library_songs = api.get_library_songs(100000, True)
 
-    log('\nFetched ' + str(len(library_songs)) + ' tracks from Library')
+    log('Fetched ' + str(len(library_songs)) + ' tracks from Library')
     return library_songs
 
 
@@ -29,17 +30,19 @@ def get_my_playlist_ids_and_names(api):
 def get_songs_from_playlist(api, playlist_id):
     playlist = api.get_playlist(playlist_id, 5000)
 
+    log('\nFetching tracks from \'' + playlist['title'] + '\' playlist...')
     if playlist['trackCount'] != len(playlist['tracks']):
         print('Invalid Response: ' + str(len(playlist['tracks'])) + '/' + str(playlist['trackCount']) + ' ,retrying...' )
         playlist = api.get_playlist(playlist_id, 5000)
 
-    log('\nFetched ' + str(len(playlist['tracks'])) + ' tracks from \'' + playlist['title'] + '\' playlist')
+    log('Fetched ' + str(len(playlist['tracks'])) + ' tracks from \'' + playlist['title'] + '\' playlist')
     return playlist['tracks']
 
 
 def get_all_uploaded_songs(api):
+    log('\nFetching uploaded tracks, it may take a while...')
     uploaded_songs = api.get_library_upload_songs(100000)
-    log('\nFetched ' + str(len(uploaded_songs)) + ' uploaded tracks')
+    log('Fetched ' + str(len(uploaded_songs)) + ' uploaded tracks')
 
     return uploaded_songs
 

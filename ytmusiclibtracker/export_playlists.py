@@ -13,14 +13,15 @@ def initialize_global_params_from_config_file():
 
 
 def export_all_songs():
+    global api
+    api = open_api()
     export_result = []
 
     export_result.extend(export_songs_from_library())
     export_result.extend(export_uploaded_songs())
     export_result.extend(export_songs_from_playlists())
 
-    headers = get_ytmlt_export_headers()
-    create_csv_with_list_of_dict(output_dir, 'exported_songs', headers, export_result, True)
+    return export_result
 
 
 def export_songs_from_library():
@@ -42,16 +43,17 @@ def export_songs_from_playlists():
     return export_result
 
 
-def export_to_csv():
+def export_to_csv(export_result=None):
     initialize_global_params_from_config_file()
 
     # setup the output directory, create it if needed
     create_dir_if_not_exist(output_dir)
-    global api
-    api = open_api()
-    export_all_songs()
-    sys.exit()
+    if not export_result:
+        export_result = export_all_songs()
+    headers = get_ytmlt_export_headers()
+    create_csv_with_list_of_dict(output_dir, 'exported_songs', headers, export_result, True)
 
 
 if __name__ == "__main__":
     export_to_csv()
+    sys.exit()

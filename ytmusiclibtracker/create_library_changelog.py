@@ -1,5 +1,3 @@
-from timeit import default_timer as timer
-
 from ytmusiclibtracker.TrackRecord import TrackRecord
 from ytmusiclibtracker.csv_wrapper import *
 from ytmusiclibtracker.track_matcher import *
@@ -24,24 +22,25 @@ def find_and_set_previous_and_current_file(config):
     if auto_detect > 0:
         auto_detect_dir = config['CHANGELOG']["auto_detect_dir"]
         list_of_filenames = get_list_of_csv_files_with_timestamp_from_dir(auto_detect_dir, 'exported_songs')
-        if len(list_of_filenames) >= 2:
+        if len(list_of_filenames) == 1:
+            current_export_file = auto_detect_dir + '\\' + list_of_filenames[0]
+        elif len(list_of_filenames) >= 2:
             list_of_filenames.sort(reverse=True)
-            current_export_file = auto_detect_dir+'\\'+list_of_filenames[0]
-            previous_export_file = auto_detect_dir+'\\'+list_of_filenames[1]
+            current_export_file = auto_detect_dir + '\\' + list_of_filenames[0]
+            previous_export_file = auto_detect_dir + '\\' + list_of_filenames[1]
         else:
             throw_error(
-                'Error: Auto detect input files failed.' 
-                '\nCould not find previous and current file in \'' + auto_detect_dir +'\' directory.'
-                '\nVerify your config.ini file if \'auto_detect_dir\' is set correctly.'
-                '\nThis could also happen if you renamed files. In that case, please change \'auto_detect\' to 0,'
-                '\nthen set \'previous_file\' and \'current_file\' manually.')
+                'Error: Auto detect input files failed.'
+                '\nCould not find previous and current file in \'' + auto_detect_dir + '\' directory.'
+                                                                                       '\nVerify your config.ini file if \'auto_detect_dir\' is set correctly.'
+                                                                                       '\nThis could also happen if you renamed files. In that case, please change \'auto_detect\' to 0,'
+                                                                                       '\nthen set \'previous_file\' and \'current_file\' manually.')
     else:
-        previous_export_file = config['CHANGELOG']["previous_file"]
-        current_export_file = config['CHANGELOG']["current_file"]
+        previous_export_file = config['CHANGELOG']["previous_file"] if os.path.isfile(config['CHANGELOG']["previous_file"]) else None
+        current_export_file = config['CHANGELOG']["current_file"] if os.path.isfile(config['CHANGELOG']["current_file"]) else None
 
 
 def import_track_records_from_csv_file(filename):
-
     csv_rows = get_list_of_rows_from_file(filename)
 
     if csv_rows:
@@ -69,7 +68,6 @@ def get_sort_function_for_track_matches():
 
 
 def create_match_results(previous_list, current_list):
-
     song_is_private = []
     duplicates = []
     match_results = []
@@ -115,17 +113,19 @@ def create_library_changelog():
     # setup the output directory, create it if needed
     create_dir_if_not_exist(output_dir)
 
-    previous_song_rows = import_track_records_from_csv_file(previous_export_file)
-    current_song_rows = import_track_records_from_csv_file(current_export_file)
+    if previous_export_file and current_export_file:
+        previous_song_rows = import_track_records_from_csv_file(previous_export_file)
+        current_song_rows = import_track_records_from_csv_file(current_export_file)
 
-    start = timer()
-    track_matches = create_match_results(previous_song_rows, current_song_rows)
-    export_track_matches_to_csv_file(track_matches)
-    end = timer()
-    log('Creating changelog took: ' + str(end - start) + ' sec.')
-
-    sys.exit()
+        track_matches = create_match_results(previous_song_rows, current_song_rows)
+        export_track_matches_to_csv_file(track_matches)
+        log('\nChangelog has been created.')
+    elif not previous_export_file and current_export_file:
+        log('\nChangelog skipped. Only one export file exists.')
+    else:
+        log('\nChangelog cannot be created. Previous and Current Export files not found')
 
 
 if __name__ == "__main__":
     create_library_changelog()
+    sys.exit()

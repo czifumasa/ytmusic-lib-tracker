@@ -11,8 +11,6 @@ setup(
     license='MIT',
     description='Useful tools for youtube music. Exporting library to csv, tracking changes in library, summary of transfer from GPM',
     # We will also need a readme eventually
-    # long_description=open('README.txt').read(),
-    entry_points={"console_scripts": ["ytmlt-export=ytmusiclibtracker.__main__:export",
-                                      "ytmlt-duplicates=ytmusiclibtracker.__main__:duplicates",
-                                      "ytmlt-changelog=ytmusiclibtracker.__main__:changelog"]}
+    long_description=open('README.md').read(),
+    entry_points={"console_scripts": ["ytmlt-export=ytmusiclibtracker.__main__:main"]}
 )

@@ -1,4 +1,4 @@
-from ytmusiclibtracker.__main__ import create_library_changelog
+from ytmusiclibtracker.__main__ import main
 
 if __name__ == '__main__':
-    create_library_changelog()
+    main()
