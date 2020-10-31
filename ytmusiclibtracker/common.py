@@ -29,7 +29,7 @@ def close_log():
 def log(message, nl=False):
     if nl:
         message += os.linesep
-    sys.stdout.write(message)
+    print(message)
     if logfile:
         logfile.write(message)
 

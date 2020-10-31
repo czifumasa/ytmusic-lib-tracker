@@ -1,4 +1,5 @@
-from setuptools import setup
+import sys
+from cx_Freeze import setup, Executable
 
 setup(
     name='ytmusiclibtracker',
@@ -12,5 +13,6 @@ setup(
     description='Useful tools for youtube music. Exporting library to csv, tracking changes in library, summary of transfer from GPM',
     # We will also need a readme eventually
     long_description=open('README.md').read(),
-    entry_points={"console_scripts": ["ytmlt-export=ytmusiclibtracker.__main__:main"]}
+    entry_points={"console_scripts": ["ytmlt-export=ytmusiclibtracker.__main__:main"]},
+    executables=[Executable("ytmusiclibtracker.py", base="console")]
 )
