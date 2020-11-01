@@ -6,92 +6,72 @@ This project contains useful tools for YouTube Music users:
   * Listing duplicates on playlist  
   * Tracking changes in user's library
   * Exporting summary of transfer from GPM (WIP)
-  
-  
-It's still a work in progress. Most of the listed functionalities are working, but they require polishing and they need to be made more user friendly.  
 
-### Regular installation
+### Installation
 
-##### Prerequisites
+1. [Download Zip file with app.](https://github.com/czifumasa/ytmusic-lib-tracker/releases/latest/download/ytmlt.zip)
+1. Extract zip file.
 
-* [Python](https://www.python.org/downloads/) - version 3.8 or higher
-
-##### Setup
-
-Clone the project into your local machine. To start working with application, open terminal in the project's root folder and type:
-```
- python setup.py install
-```
-
-This command will install all required dependencies. 
-
-##### Authentication
+#### Authentication
 
 Before starting, you will also have to provide header file to authenticate api requests to your YouTubeMusic account.
 Unfortunately, at least for now, it's a bit complicated.
 
-Follow instruction from [ytmusicapi's documentation](https://ytmusicapi.readthedocs.io/en/latest/setup.html) to create `headers_auth.json` and copy it to the project's root directory. That file will contain a header with a cookie and will be used to authenticate all api requests with your YTMusic account.
+##### Firefox
+
+1. Open desktop browser and go to [music.youtube.com](https://music.youtube.com)
+1. Login to your youtube account
+1. Open developer tools by pressing 'F12' or 'Ctrl-Shift-I'  and select the 'Network' tab
+1. Click on Home panel in youtube music
+1. In developer tools you should see new requests. Type '/browse' to filter.
+1. Check if filtered request looks like this: Status 200, Method POST, Domain music.youtube.com
+1. Copy the request headers (right click on filtered request > copy > copy request headers)
+1. Run ytmusiclibtracker.exe
+1. If it's your first time running app, you should this screen:
+![IMAGE](https://raw.githubusercontent.com/czifumasa/ytmusic-lib-tracker/cx_freeze/docs/assets/images/welcome_message.JPG) 
+1. Paste copied headers into terminal and press `enter` twice
+1. That's all! Export of your library should start.
+
+You can also watch this gif to make sure you are copying request headers correctly:
+
+![GIF](https://raw.githubusercontent.com/czifumasa/ytmusic-lib-tracker/cx_freeze/docs/assets/images/how_to_copy_headers_firefox.gif)
+
 The cookie should not expire, unless you will manually log out of web client.
-    
-### Virtual environment installation (OPTIONAL)
-
-##### Prerequisites
-
-* [pipenv](https://github.com/pypa/pipenv) - install with `pip install pipenv`
-                                                       
-##### Setup
-
-Alternatively you can work with application in isolated virtual environment. It's really helpful if you are working with many python apps and each one of them requires different libraries with conflicting versions.
-To create virtual environment you can use pipenv. Open terminal in the project's root folder and type:
-
- ```
- pipenv install -e .
- ```
-
-Then whenever you'd like to work with application, open shell with activated virtual environment, by typing:
-
- ```
- pipenv shell
- ```
-
-## Usage                                                                                                         
+## Features                                                                                                         
  
-##### Export library and playlists to csv
+### Export 
+After correct authentication, export of your library will start automatically. 
+Depending on the size of your library it may take some time to finish.
+When it's done you should see the proper message:
+![IMAGE](https://raw.githubusercontent.com/czifumasa/ytmusic-lib-tracker/cx_freeze/docs/assets/images/welcome_message.JPG) 
 
-To export full content of your YTMusic library as well as all your playlists run:
+Press `Enter` to close application. Then go to the main application folder.
+There should be `target` folder where you can find csv files with export results.
 
- ```
- ytmlt-export
- ```
+### Changelog 
+Sometimes some songs in your library or in your playlists may no longer be available on youtube. 
+This feature will help in localizing these songs. You can also see what you added and removed since the last export. 
 
-##### Listing duplicates 
+## Advanced Usage
+With default behaviour, the last two export files from `target/export` directory will be used as previous and current.
+If you want to compare specific files. open `config.ini` file.
+In `[Changelog]` section change `auto_detect` option to `0` and modify previous and current file paths.
 
-To export list of duplicated tracks on your playlists run:
- ```
- ytmlt-duplicates
- ```
+### Summary of transfer from GPM
+Warn: For some users this feature can be unavailable as Google Play Music is shutting down and in some countries it's no longer accessible.
 
-##### Tracking changes in user's library
-
-When you have at least two export results, you can track any changes in your library.
-Sometimes some songs in your library may no longer be available on youtube. This feature will help in localizing unavailable songs. You can also 
-see what you added and removed since the last export. Method supports export results 
-from `ytmlt-export` and [gmusis-playlist.js](https://github.com/soulfx/gmusic-playlist.js).
-
- To create changelog run:
-
- ```
- ytmlt-changelog
- ```
- 
-With default behaviour, the last two export files from `ytmlt-export` will be used as previous and current.
-If you want to compare specific files. open `config.ini` file and provide output directory, previous and current file.
-
-If you want to compare export results from GPM and see what happened after transferring your library to YTM,
+If you want to compare export results from Google Play Music and see what happened after transferring your library to YTM,
 you can create csv file with exported playlists using [gmusis-playlist.js](https://github.com/soulfx/gmusic-playlist.js).
 Next, move that file to directory with export results (by default it's `/target/export`). 
-Then open `config.ini` and replace previous_file option with the path to your CSV file. 
-Finally, you can run `ytmlt-changelog`.
+Then open `config.ini`. In `[Changelog]` section change `auto_detect` option to `0` and set `previous_file` as path to your export file from GPM
+and `current_file` as path to your export file from YTM.
+  
+Finally, you can run ytmusiclibtracker.exe. Now created changelog will compare your GPM and YTM libraries.
+
+## Contribution
+
+If you'd like to contribute to the project or just run scripts directly from python see 
+[Documentation for Developers](https://github.com/czifumasa/ytmusic-lib-tracker/blob/cx_freeze/docs/README.md).
 
 ## Acknowledgements
 
