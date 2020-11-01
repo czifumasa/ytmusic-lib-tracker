@@ -7,6 +7,18 @@ from ytmusiclibtracker.export_playlists import export_to_csv, export_all_songs
 from ytmusiclibtracker.list_duplicates import list_duplicates
 
 
+def changelog():
+    create_library_changelog()
+
+
+def export():
+    export_to_csv()
+
+
+def duplicates():
+    list_duplicates()
+
+
 def show_exception_and_exit(exc_type, exc_value, tb):
     traceback.print_exception(exc_type, exc_value, None)
     input('\nPress Enter to exit...')
