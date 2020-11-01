@@ -32,9 +32,11 @@ Unfortunately, at least for now, it's a bit complicated.
 1. Paste copied headers into terminal and press `enter` twice
 1. That's all! Export of your library should start.
 
-You can also watch this gif to make sure you are copying request headers correctly:
+<details>
+<summary>You can also watch this gif to make sure you are copying request headers correctly</summary>
 
 ![GIF](https://raw.githubusercontent.com/czifumasa/ytmusic-lib-tracker/cx_freeze/docs/assets/images/how_to_copy_headers_firefox.gif)
+</details> 
 
 The cookie should not expire, unless you will manually log out of web client.
 ## Features                                                                                                         
