@@ -53,14 +53,6 @@ To export full content of your YTMusic library as well as all your playlists run
  ```
  ytmlt-export
  ```
-
-##### Listing duplicates 
-
-To export list of duplicated tracks on your playlists run:
- ```
- ytmlt-duplicates
- ```
-
 ##### Tracking changes in user's library
 
 To create changelog run:

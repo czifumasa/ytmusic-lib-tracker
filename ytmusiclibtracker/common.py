@@ -71,15 +71,6 @@ def flatten_list(list_to_flatten):
     return [item for sublist in list_to_flatten for item in sublist]
 
 
-def get_duplicated_items_from_list(seq):
-    seen = set()
-    seen_add = seen.add
-    # adds all elements it doesn't know yet to seen and all other to seen_twice
-    seen_twice = set(x for x in seq if x in seen or seen_add(x))
-    # turn the set into a list (as requested)
-    return list(seen_twice)
-
-
 def group_list_by_function(seq, function):
     grouped_elements = {}
     for element in seq:

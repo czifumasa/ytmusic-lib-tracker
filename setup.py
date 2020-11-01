@@ -14,7 +14,6 @@ setup(
     # We will also need a readme eventually
     long_description=open('README.md').read(),
     entry_points={'console_scripts': ['ytmlt-export=ytmusiclibtracker.__main__:export',
-                                      'ytmlt-duplicates=ytmusiclibtracker.__main__:duplicates',
                                       'ytmlt-changelog=ytmusiclibtracker.__main__:changelog']},
     executables=[Executable('ytmusiclibtracker.py', base='console', icon='ytmlt.ico')]
 )

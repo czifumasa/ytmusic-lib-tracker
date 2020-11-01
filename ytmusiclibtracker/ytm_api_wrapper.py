@@ -59,46 +59,6 @@ def get_all_uploaded_songs(api):
     return uploaded_songs
 
 
-# returns [id1:[song1,song2,song3], id2: [song4],...]
-def get_songs_from_playlist_grouped_by_id(api, playlist_id):
-    playlist = get_songs_from_playlist(api, playlist_id)
-    return group_songs_by_id(playlist)
-
-
-def group_songs_by_id(songs_list):
-    songs_by_id = {}
-
-    for track in songs_list:
-        if track['videoId'] in songs_by_id:
-            songs_by_id[track['videoId']].append(track)
-        else:
-            songs_by_id[track['videoId']] = [track]
-
-    return songs_by_id
-
-
-def create_list_of_duplicated_sons(grouped_songs_by_id):
-    duplicated_songs = flatten_list(
-        [get_list_of_duplicated_songs(song_id, songs_list) for (song_id, songs_list) in grouped_songs_by_id.items()])
-
-    log('Found ' + str(len(duplicated_songs)) + ' duplicated tracks')
-    return duplicated_songs
-
-
-def get_list_of_duplicated_songs(song_id, songs_list):
-    if len(songs_list) > 1:
-        if song_id is not None:
-            return [songs_list[0]]
-        else:
-            song_strings = [song_string_representation(song) for song in songs_list]
-            duplicated_song_strings = get_duplicated_items_from_list(song_strings)
-
-            return [next(song for song in songs_list if song_string_representation(song) == song_string) for song_string
-                    in duplicated_song_strings]
-    else:
-        return []
-
-
 def export_songs(songs, playlist):
     export_result = []
     for song in songs:
