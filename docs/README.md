@@ -48,14 +48,14 @@ Then whenever you'd like to work with application, open shell with activated vir
  
 ##### Export library and playlists to csv
 
-To export full content of your YTMusic library as well as all your playlists run:
+To export full content of your YTMusic library as well as all your playlists run from project's root folder:
 
  ```
  ytmlt-export
  ```
 ##### Tracking changes in user's library
 
-To create changelog run:
+To create changelog run from project's root folder:
 
  ```
  ytmlt-changelog
@@ -63,5 +63,20 @@ To create changelog run:
  
 With default behaviour, the last two export files from `ytmlt-export` will be used as previous and current.
 
+##### Export and changelog in single call
 
+Run from project's root folder:
+ ```
+  python -m ytmusiclibtracker
+ ```
+
+##### Create exe 
+
+Python scripts can be freezed and delivered as executable. It can be created using [cx_freeze](https://github.com/marcelotduarte/cx_Freeze).
+
+```
+python create_exe.py build
+```
+
+In `build` directory there will be a folder containing libs and ytmusiclibtracker.exe.
 

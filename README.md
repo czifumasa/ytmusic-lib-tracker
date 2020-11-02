@@ -31,7 +31,7 @@ Unfortunately, at least for now, it's a bit complicated, so please follow this g
 <details>
 <summary>You can also watch this gif to make sure you are copying request headers correctly</summary>
 
-![GIF](https://raw.githubusercontent.com/czifumasa/ytmusic-lib-tracker/cx_freeze/docs/assets/images/how_to_copy_headers_firefox.gif)
+![GIF](https://raw.githubusercontent.com/czifumasa/ytmusic-lib-tracker/master/docs/assets/images/how_to_copy_headers_firefox.gif)
 </details> 
 </details>
 <details>
@@ -48,7 +48,7 @@ Unfortunately, at least for now, it's a bit complicated, so please follow this g
 
 9. Once you have copied request headers, run ytmusiclibtracker.exe
 10. If it's your first time running app, you should this screen:
-![IMAGE](https://raw.githubusercontent.com/czifumasa/ytmusic-lib-tracker/cx_freeze/docs/assets/images/welcome_message.JPG) 
+![IMAGE](https://raw.githubusercontent.com/czifumasa/ytmusic-lib-tracker/master/docs/assets/images/welcome_message.JPG) 
 11. Paste copied headers into terminal and press `enter` twice
 12. That's all! Export of your library should start.
 
@@ -61,7 +61,7 @@ The cookie should not expire, unless you will manually log out of web client.
 After correct authentication, export of your library will start automatically. 
 Depending on the size of your library it may take some time to finish.
 When it's done you should see the proper message:
-![IMAGE](https://raw.githubusercontent.com/czifumasa/ytmusic-lib-tracker/cx_freeze/docs/assets/images/end_message.JPG) 
+![IMAGE](https://raw.githubusercontent.com/czifumasa/ytmusic-lib-tracker/master/docs/assets/images/end_message.JPG) 
 
 Press `Enter` to close application. Then go to the main application folder.
 All your library has been exported and saved in CSV file. 
@@ -105,7 +105,7 @@ Finally, you can run ytmusiclibtracker.exe. Now created changelog will compare y
 ## Contribution
 
 If you'd like to contribute to the project or just run scripts directly from python see 
-[Documentation for Developers](https://github.com/czifumasa/ytmusic-lib-tracker/blob/cx_freeze/docs/README.md).
+[Documentation for Developers](https://github.com/czifumasa/ytmusic-lib-tracker/blob/master/docs/README.md).
 
 ## Acknowledgements
 

@@ -21,7 +21,6 @@ def initialize_global_params_from_config_file():
 
 
 def export_all_songs():
-    validate_config_file()
     global api
     api = open_api()
     export_result = []
@@ -53,6 +52,7 @@ def export_songs_from_playlists():
 
 
 def export_to_csv():
+    validate_config_file()
     initialize_global_params_from_config_file()
     if not skip_export:
         # setup the output directory, create it if needed
