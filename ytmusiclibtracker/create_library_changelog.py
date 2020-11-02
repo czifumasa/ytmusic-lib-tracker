@@ -36,8 +36,10 @@ def find_and_set_previous_and_current_file(config):
                                                                                        '\nThis could also happen if you renamed files. In that case, please change \'auto_detect\' to 0,'
                                                                                        '\nthen set \'previous_file\' and \'current_file\' manually.')
     else:
-        previous_export_file = config['CHANGELOG']["previous_file"] if os.path.isfile(config['CHANGELOG']["previous_file"]) else None
-        current_export_file = config['CHANGELOG']["current_file"] if os.path.isfile(config['CHANGELOG']["current_file"]) else None
+        previous_export_file = config['CHANGELOG']["previous_file"] if os.path.isfile(
+            config['CHANGELOG']["previous_file"]) else None
+        current_export_file = config['CHANGELOG']["current_file"] if os.path.isfile(
+            config['CHANGELOG']["current_file"]) else None
 
 
 def import_track_records_from_csv_file(filename):
@@ -69,7 +71,6 @@ def get_sort_function_for_track_matches():
 
 def create_match_results(previous_list, current_list):
     song_is_private = []
-    duplicates = []
     match_results = []
 
     unprocessed_tracks = set(previous_list)
@@ -86,8 +87,6 @@ def create_match_results(previous_list, current_list):
                     match_hash = hash(match.matched_track)
                     if match_hash in current_list_buffer:
                         del current_list_buffer[match_hash]
-                    if len(matches) > 1:
-                        duplicates.append(matches[0])
             else:
                 unprocessed_tracks.append(track_to_find)
 
@@ -96,6 +95,17 @@ def create_match_results(previous_list, current_list):
         create_match_results_for_unmatched_tracks_from_current_file(flatten_list(current_list_buffer.values())))
 
     return match_results
+
+
+def create_duplicates_results(current_list):
+    duplicates_buffer = group_list_by_function(current_list, lambda track_row: track_row.playlist_id)
+    all_duplicates = []
+    for playlist_tracks in duplicates_buffer.values():
+        hash_buffer = group_list_by_function(
+            playlist_tracks, lambda track_row: hash(get_comparable_text(track_row.full_name)))
+        duplicates = [track_list[0] for (track_hash, track_list) in hash_buffer.items() if len(track_list) > 1]
+        all_duplicates.extend(duplicates)
+    return create_match_results_for_duplicates(all_duplicates)
 
 
 def get_match_functions():
@@ -118,7 +128,10 @@ def create_library_changelog():
         current_song_rows = import_track_records_from_csv_file(current_export_file)
 
         track_matches = create_match_results(previous_song_rows, current_song_rows)
-        export_track_matches_to_csv_file(track_matches)
+        duplicates = create_duplicates_results(current_song_rows)
+
+        changelog_results = track_matches + duplicates
+        export_track_matches_to_csv_file(changelog_results)
         log('\nChangelog has been created.')
     elif not previous_export_file and current_export_file:
         log('\nChangelog skipped. Only one export file exists.')

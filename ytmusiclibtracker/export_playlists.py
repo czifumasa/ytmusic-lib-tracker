@@ -1,6 +1,7 @@
 from ytmusiclibtracker.csv_wrapper import *
 from ytmusiclibtracker.ytm_api_wrapper import *
 
+skip_export = False
 output_dir = None
 api = None
 
@@ -13,12 +14,13 @@ def validate_config_file():
 def initialize_global_params_from_config_file():
     config = get_configuration_from_file('config.ini')
 
-    global output_dir
+    global output_dir, skip_export
     output_dir = config['EXPORT']["output_dir_export"]
+    if get_int_value_from_config(config, 'EXPORT', "skip_export") > 0:
+        skip_export = True
 
 
 def export_all_songs():
-    validate_config_file()
     global api
     api = open_api()
     export_result = []
@@ -49,15 +51,18 @@ def export_songs_from_playlists():
     return export_result
 
 
-def export_to_csv(export_result=None):
+def export_to_csv():
+    validate_config_file()
     initialize_global_params_from_config_file()
+    if not skip_export:
+        # setup the output directory, create it if needed
+        create_dir_if_not_exist(output_dir)
 
-    # setup the output directory, create it if needed
-    create_dir_if_not_exist(output_dir)
-    if not export_result:
         export_result = export_all_songs()
-    headers = get_ytmlt_export_headers()
-    create_csv_with_list_of_dict(output_dir, 'exported_songs', headers, export_result, True)
+        headers = get_ytmlt_export_headers()
+        create_csv_with_list_of_dict(output_dir, 'exported_songs', headers, export_result, True)
+        return export_result
+    return []
 
 
 if __name__ == "__main__":
