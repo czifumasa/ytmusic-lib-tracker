@@ -3,7 +3,7 @@
 build/
 dist/
 .idea/
-target/
+output/
 __pycache__/
 *.egg-info/
 *.iml

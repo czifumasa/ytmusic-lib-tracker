@@ -59,8 +59,8 @@ Unfortunately, at least for now, it's a bit complicated, so please follow this g
 12. That's all! Export of your library should start.
 
 
-
-The cookie should not expire, unless you will manually log out of web client.
+The cookie should not expire, unless you will manually log out of web client. If you have problems with authentication, remove `headers_auth.json` file from main application folder and try to run `YTMusic-Lib-Tracker.exe` again.
+  
 ## Features                                                                                                         
  
 ### Export 
@@ -71,12 +71,12 @@ When it's done you should see the proper message:
 
 Press `Enter` to close application. Then go to the main application folder.
 All your library has been exported and saved in CSV file. 
-With default settings you can find it in `target\export` directory. 
+With default settings you can find it in `output\export` directory. 
 CSV file is using `|` as column separator. 
 
 ### Changelog 
 If you will run export for the second time CSV file with changelog data will be created. 
-With default settings you can find it in `target\changelog` directory.
+With default settings you can find it in `output\changelog` directory.
 
 Changelog will contain:
 
@@ -106,7 +106,7 @@ If you want to compare export results from Google Play Music and see what happen
 you can create csv file with exported google play music playlists using [gmusis-playlist.js](https://github.com/soulfx/gmusic-playlist.js).
 (Check it's documentation for details).
 
-Next, move that file to directory with export results (by default it's `/target/export`). 
+Next, move that file to directory with export results (by default it's `/output/export`). 
 Then open `config.ini`. In `[Changelog]` section change `auto_detect` option to `0` and set `previous_file` as path to your export file from GPM
 and `current_file` as path to your export file from YTM.
   
