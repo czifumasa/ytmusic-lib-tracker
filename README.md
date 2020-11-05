@@ -1,4 +1,4 @@
-# ytmusic-lib-tracker 
+# YTMusic-Lib-Tracker 
 
 This project contains useful tools for YouTube Music users:
 
@@ -28,11 +28,11 @@ Unfortunately, at least for now, it's a bit complicated, so please follow this g
 6. In developer tools you should see new requests. Type '/browse' to filter.
 7. Check if filtered request looks like this: Status 200, Method POST, Domain music.youtube.com
 8. Copy the request headers (right click on filtered request > copy > copy request headers)
-<details>
-<summary>You can also watch this gif to make sure you are copying request headers correctly</summary>
-
-![GIF](https://raw.githubusercontent.com/czifumasa/ytmusic-lib-tracker/master/docs/assets/images/how_to_copy_headers_firefox.gif)
-</details> 
+    <details>
+    <summary>You can also watch this gif to make sure you are copying request headers correctly</summary>
+    
+    ![GIF](https://raw.githubusercontent.com/czifumasa/ytmusic-lib-tracker/master/docs/assets/images/how_to_copy_headers_firefox.gif)
+    </details> 
 </details>
 <details>
  <summary>Instructions for Google Chrome</summary>
@@ -46,7 +46,7 @@ Unfortunately, at least for now, it's a bit complicated, so please follow this g
 8. Click on the Name of any matching request. In the `Headers` tab, scroll to the section `Request headers` and copy everything starting from `accept: */*` to the end of the section
 </details>
 
-9. Once you have copied request headers, run ytmusiclibtracker.exe
+9. Once you have copied request headers, run `YTMusic-Lib-Tracker.exe`
 10. If it's your first time running app, you should this screen:
 ![IMAGE](https://raw.githubusercontent.com/czifumasa/ytmusic-lib-tracker/master/docs/assets/images/welcome_message.JPG) 
 11. Paste copied headers into terminal and press `enter` twice
