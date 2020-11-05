@@ -19,7 +19,7 @@ Unfortunately, at least for now, it's a bit complicated, so please follow this g
 
 1. Open your desktop browser
 <details>
- <summary>Instructions for Firefox</summary>
+ <summary>Instructions for Firefox [CLICK]</summary>
 
 2. Go to [music.youtube.com](https://music.youtube.com)
 3. Login to your youtube account
@@ -29,13 +29,13 @@ Unfortunately, at least for now, it's a bit complicated, so please follow this g
 7. Check if filtered request looks like this: Status 200, Method POST, Domain music.youtube.com
 8. Copy the request headers (right click on filtered request > copy > copy request headers)
     <details>
-    <summary>You can also watch this gif to make sure you are copying request headers correctly</summary>
+    <summary>You can also watch this gif to make sure you are copying request headers correctly [CLICK]</summary>
     
     ![GIF](https://raw.githubusercontent.com/czifumasa/ytmusic-lib-tracker/master/docs/assets/images/how_to_copy_headers_firefox.gif)
     </details> 
 </details>
 <details>
- <summary>Instructions for Google Chrome</summary>
+ <summary>Instructions for Google Chrome [CLICK]</summary>
 
 2. Go to [music.youtube.com](https://music.youtube.com)
 3. Login to your youtube account
@@ -44,6 +44,12 @@ Unfortunately, at least for now, it's a bit complicated, so please follow this g
 6. In developer tools you should see new requests. Type '/browse' to filter.
 7. Check if filtered request looks like this: Status 200, Method POST, Domain music.youtube.com
 8. Click on the Name of any matching request. In the `Headers` tab, scroll to the section `Request headers` and copy everything starting from `accept: */*` to the end of the section
+     <details>
+     <summary>You can also watch this gif to make sure you are copying request headers correctly [CLICK]</summary>
+      
+     ![GIF](https://raw.githubusercontent.com/czifumasa/ytmusic-lib-tracker/master/docs/assets/images/how_to_copy_headers_chrome.gif)
+     </details> 
+
 </details>
 
 9. Once you have copied request headers, run `YTMusic-Lib-Tracker.exe`
@@ -93,9 +99,13 @@ If you want to compare specific files:
 
 ### Summary of transfer from GPM
 Warn: For some users this feature can be unavailable as Google Play Music is shutting down and in some countries it's no longer accessible.
+So it won't be possible to export your GPM library. You can try to workaround it by opening GPM with deeper link instead of Home Page.
+For example this one: [Go to GPM](https://play.google.com/music/listen?u=1#/artists)
 
 If you want to compare export results from Google Play Music and see what happened after transferring your library to YTM,
-you can create csv file with exported playlists using [gmusis-playlist.js](https://github.com/soulfx/gmusic-playlist.js).
+you can create csv file with exported google play music playlists using [gmusis-playlist.js](https://github.com/soulfx/gmusic-playlist.js).
+(Check it's documentation for details).
+
 Next, move that file to directory with export results (by default it's `/target/export`). 
 Then open `config.ini`. In `[Changelog]` section change `auto_detect` option to `0` and set `previous_file` as path to your export file from GPM
 and `current_file` as path to your export file from YTM.
