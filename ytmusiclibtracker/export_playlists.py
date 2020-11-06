@@ -62,7 +62,9 @@ def export_to_csv():
         # setup the output directory, create it if needed
         create_dir_if_not_exist(output_dir)
         headers = get_ytmlt_export_headers()
-        create_csv_with_list_of_dict(output_dir, 'exported_songs', headers, export_result, True)
+        filename = create_csv_with_list_of_dict(output_dir, 'exported_songs', headers, export_result, True)
+        log('Export has been completed. File with results has been saved in:')
+        log(filename, True)
         return export_result
     log('Export has been skipped. If you want to export again, open config.ini file and edit option: skip_export=0', True)
     return []

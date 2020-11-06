@@ -14,6 +14,7 @@ def create_csv_with_list_of_dict(output_dir, filename, headers, list_of_rows, wi
         file_writer.writerow(headers)
         for row in list_of_rows:
             file_writer.writerow(row)
+    return os.path.abspath(full_name)
 
 
 def get_list_of_rows_from_file(filename):

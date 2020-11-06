@@ -62,7 +62,8 @@ def export_track_matches_to_csv_file(matches):
                'VideoId', 'Matched_VideoId',
                'SetVideoId', 'Matched_SetVideoId',
                'PlaylistId', 'Matched_PlaylistId']
-    create_csv_with_list_of_dict(output_dir, 'change_log', headers, csv_rows, True)
+    return create_csv_with_list_of_dict(output_dir, 'change_log', headers, csv_rows, True)
+
 
 
 def get_sort_function_for_track_matches():
@@ -124,9 +125,11 @@ def create_library_changelog():
     initialize_global_params_from_config_file()
     if previous_export_file and current_export_file:
 
-        log('Previous export file: ' + previous_export_file)
+        log('Previous export file: ')
+        log(os.path.abspath(previous_export_file), True)
         previous_song_rows = import_track_records_from_csv_file(previous_export_file)
-        log('\nCurrent export file: ' + current_export_file, True)
+        log('Current export file: ')
+        log(os.path.abspath(current_export_file), True)
         log('Creating changelog...', True)
         current_song_rows = import_track_records_from_csv_file(current_export_file)
 
@@ -136,8 +139,9 @@ def create_library_changelog():
         changelog_results = track_matches + duplicates
         # setup the output directory, create it if needed
         create_dir_if_not_exist(output_dir)
-        export_track_matches_to_csv_file(changelog_results)
-        log('Changelog has been created.', True)
+        filename = export_track_matches_to_csv_file(changelog_results)
+        log('Changelog has been created. File with results has been saved in:')
+        log(filename, True)
     elif (not previous_export_file) and current_export_file:
         log('Changelog skipped. Only one export file exists.', True)
     else:
