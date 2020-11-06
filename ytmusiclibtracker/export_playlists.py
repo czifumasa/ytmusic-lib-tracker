@@ -52,16 +52,19 @@ def export_songs_from_playlists():
 
 
 def export_to_csv():
+    log('EXPORT FROM YOUTUBE MUSIC')
+    log('-----------------------------------------------------------------------', True)
     validate_config_file()
     initialize_global_params_from_config_file()
+
     if not skip_export:
+        export_result = export_all_songs()
         # setup the output directory, create it if needed
         create_dir_if_not_exist(output_dir)
-
-        export_result = export_all_songs()
         headers = get_ytmlt_export_headers()
         create_csv_with_list_of_dict(output_dir, 'exported_songs', headers, export_result, True)
         return export_result
+    log('Export has been skipped. If you want to export again, open config.ini file and edit option: skip_export=0', True)
     return []
 
 

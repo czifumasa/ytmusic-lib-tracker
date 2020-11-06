@@ -27,8 +27,10 @@ def main():
     export_to_csv()
     create_library_changelog()
     end = timer()
-    log('Exporting music collection and creating changelog has been finished. Operation took : ' + str(end - start) + ' sec.')
-    input("\nPress Enter to continue...")
+    log('END')
+    log('-----------------------------------------------------------------------', True)
+    log('All tasks has been completed. Time: ' + str(end - start) + ' sec.', True)
+    input("Press Enter to continue...")
     sys.exit()
 
 

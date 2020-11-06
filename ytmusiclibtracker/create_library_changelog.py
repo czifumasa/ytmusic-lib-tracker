@@ -32,9 +32,9 @@ def find_and_set_previous_and_current_file(config):
             throw_error(
                 'Error: Auto detect input files failed.'
                 '\nCould not find previous and current file in \'' + auto_detect_dir + '\' directory.'
-                                                                                       '\nVerify your config.ini file if \'auto_detect_dir\' is set correctly.'
-                                                                                       '\nThis could also happen if you renamed files. In that case, please change \'auto_detect\' to 0,'
-                                                                                       '\nthen set \'previous_file\' and \'current_file\' manually.')
+                '\nVerify your config.ini file if \'auto_detect_dir\' is set correctly.'
+                '\nThis could also happen if you renamed files. In that case, please change \'auto_detect\' to 0,'
+                '\nthen set \'previous_file\' and \'current_file\' manually.')
     else:
         previous_export_file = config['CHANGELOG']["previous_file"] if os.path.isfile(
             config['CHANGELOG']["previous_file"]) else None
@@ -119,24 +119,29 @@ def get_match_functions():
 
 
 def create_library_changelog():
+    log('CHANGELOG')
+    log('-----------------------------------------------------------------------', True)
     initialize_global_params_from_config_file()
-    # setup the output directory, create it if needed
-    create_dir_if_not_exist(output_dir)
-
     if previous_export_file and current_export_file:
+
+        log('Previous export file: ' + previous_export_file)
         previous_song_rows = import_track_records_from_csv_file(previous_export_file)
+        log('\nCurrent export file: ' + current_export_file, True)
+        log('Creating changelog...', True)
         current_song_rows = import_track_records_from_csv_file(current_export_file)
 
         track_matches = create_match_results(previous_song_rows, current_song_rows)
         duplicates = create_duplicates_results(current_song_rows)
 
         changelog_results = track_matches + duplicates
+        # setup the output directory, create it if needed
+        create_dir_if_not_exist(output_dir)
         export_track_matches_to_csv_file(changelog_results)
-        log('\nChangelog has been created.')
-    elif not previous_export_file and current_export_file:
-        log('\nChangelog skipped. Only one export file exists.')
+        log('Changelog has been created.', True)
+    elif (not previous_export_file) and current_export_file:
+        log('Changelog skipped. Only one export file exists.', True)
     else:
-        log('\nChangelog cannot be created. Previous and Current Export files not found')
+        log('Changelog cannot be created. Previous and Current Export files not found.', True)
 
 
 if __name__ == "__main__":

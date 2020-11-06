@@ -35,6 +35,7 @@ def get_convert_function_by_headers(header):
     if header == get_ytmlt_export_headers():
         return lambda row: row
     if header == get_gpm_export_headers():
+        log('File recognized as export results from Google Play Music.')
         return lambda row: convert_gpm_to_ytmlt_row(row)
     throw_error('CSV file with exported songs has unrecognized structure')
 
