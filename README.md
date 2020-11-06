@@ -9,7 +9,7 @@ This project contains useful tools for YouTube Music users:
 
 ### Installation
 
-1. [Download Zip file with app.](https://github.com/czifumasa/ytmusic-lib-tracker/releases/latest/download/YTMusicLibTracker.zip)
+1. [Download Zip file with app.](https://github.com/czifumasa/ytmusic-lib-tracker/releases/latest/download/YTMLibTracker.zip)
 1. Extract zip file.
 
 #### Authentication
