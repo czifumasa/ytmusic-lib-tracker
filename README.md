@@ -5,11 +5,11 @@ This project contains useful tools for YouTube Music users:
   * Exporting user's library to csv
   * Listing duplicates on playlist  
   * Tracking changes in user's library
-  * Exporting summary of transfer from GPM (WIP)
+  * Exporting summary of transfer from GPM 
 
 ### Installation
 
-1. [Download Zip file with app.](https://github.com/czifumasa/ytmusic-lib-tracker/releases/latest/download/ytmlt.zip)
+1. [Download Zip file with app.](https://github.com/czifumasa/ytmusic-lib-tracker/releases/latest/download/YTMusicLibTracker.zip)
 1. Extract zip file.
 
 #### Authentication
@@ -52,14 +52,16 @@ Unfortunately, at least for now, it's a bit complicated, so please follow this g
 
 </details>
 
-9. Once you have copied request headers, run `YTMusic-Lib-Tracker.exe`
+9. Once you have copied request headers, run `YTMusicLibTracker.exe`
 10. If it's your first time running app, you should this screen:
 ![IMAGE](https://raw.githubusercontent.com/czifumasa/ytmusic-lib-tracker/master/docs/assets/images/welcome_message.JPG) 
 11. Paste copied headers into terminal and press `enter` twice
 12. That's all! Export of your library should start.
+13. Depending on the size of your library it may take up to a few minutes to complete the export.
+14. After finish, you can find the results in `output` directory in the main app's folder. 
 
 
-The cookie should not expire, unless you will manually log out of web client. If you have problems with authentication, remove `headers_auth.json` file from main application folder and try to run `YTMusic-Lib-Tracker.exe` again.
+The cookie should not expire, unless you will manually log out of web client. If you have problems with authentication, remove `headers_auth.json` file from main application folder and try to run `YTMusicLibTracker.exe` again.
   
 ## Features                                                                                                         
  
@@ -88,6 +90,19 @@ Changelog will contain:
 * All other songs that has not been changed
 
 ## Advanced Usage
+
+### Switch youtube account
+
+If you want to change the account from you are importing data:
+
+1. Go to application's main folder.
+2. Remove `headers_auth.json` file if it exists.
+3. Run `YTMusicLibTracker.exe`
+4. You will be asked to paste request headers again, so repeat the procedure described in [Authentication](#authentication) section.
+   This time you should be logged in to your second youtube account.
+    
+
+### Manual Changelog
 With default behaviour, your youtube music library will be exported and changelog will be created based on comparison of current and previous exports.
 
 If you want to compare specific files: 
@@ -98,19 +113,19 @@ If you want to compare specific files:
 5. Save `config.ini` file.
 
 ### Summary of transfer from GPM
-Warn: For some users this feature can be unavailable as Google Play Music is shutting down and in some countries it's no longer accessible.
+Warning: For some users this feature can be unavailable as Google Play Music is shutting down and in some countries it's no longer accessible.
 So it won't be possible to export your GPM library. You can try to workaround it by opening GPM with deeper link instead of Home Page.
 For example this one: [Go to GPM](https://play.google.com/music/listen?u=1#/artists)
 
 If you want to compare export results from Google Play Music and see what happened after transferring your library to YTM,
 you can create csv file with exported google play music playlists using [gmusis-playlist.js](https://github.com/soulfx/gmusic-playlist.js).
-(Check it's documentation for details).
+(Check its documentation for details).
 
 Next, move that file to directory with export results (by default it's `/output/export`). 
 Then open `config.ini`. In `[Changelog]` section change `auto_detect` option to `0` and set `previous_file` as path to your export file from GPM
 and `current_file` as path to your export file from YTM.
   
-Finally, you can run ytmusiclibtracker.exe. Now created changelog will compare your GPM and YTM libraries.
+Finally, you can run `YTMusicLibTracker.exe`. Now created changelog will compare your GPM and YTM libraries.
 
 ## Contribution
 
