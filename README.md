@@ -3,16 +3,17 @@
 This project contains useful tools for YouTube Music users:
 
   * Exporting user's library to csv
-  * Listing duplicates on playlist  
+  * Listing duplicated songs
+  * Listing unavailable songs 
   * Tracking changes in user's library
   * Exporting summary of transfer from GPM 
 
 ### Installation
 
-1. [Download Zip file with app.](https://github.com/czifumasa/ytmusic-lib-tracker/releases/latest/download/YTMLibTracker.zip)
+1. [Download Zip file with app.](https://github.com/czifumasa/ytmusic-lib-tracker/releases/latest/download/YTMLibTracker-Windows.zip)
 1. Extract zip file.
 
-#### Authentication
+#### Authentication and Usage
 
 Before starting, you will also have to provide header file to authenticate api requests to your YouTubeMusic account.
 Unfortunately, at least for now, it's a bit complicated, so please follow this guide:
@@ -58,26 +59,26 @@ Unfortunately, at least for now, it's a bit complicated, so please follow this g
 11. Paste copied headers into terminal and press `enter` twice
 12. That's all! Export of your library should start.
 13. Depending on the size of your library it may take up to a few minutes to complete the export.
-14. After finish, you can find the results in `output` directory in the main app's folder. 
+14. When it's done you should see the proper message:
+![IMAGE](https://raw.githubusercontent.com/czifumasa/ytmusic-lib-tracker/master/docs/assets/images/end_message.JPG)
+15. Press `Enter` to close application. 
+16. Go to the main application folder. Your whole library, uploaded songs and playlist has been exported and saved in CSV file. 
+With default settings you can find export results in `output\export` directory and changelog in `output\changelog`. 
 
-
-The cookie should not expire, unless you will manually log out of web client. If you have problems with authentication, remove `headers_auth.json` file from main application folder and try to run `YTMusicLibTracker.exe` again.
+The cookie you used for authentication should not expire, so the next time you run the app, you will be already logged in.  
+However, If you have any problems with authentication, remove `headers_auth.json` file from main application folder and try to run `YTMusicLibTracker.exe` again to update your cookie file.
   
 ## Features                                                                                                         
  
 ### Export 
 After correct authentication, export of your library will start automatically. 
 Depending on the size of your library it may take some time to finish.
-When it's done you should see the proper message:
-![IMAGE](https://raw.githubusercontent.com/czifumasa/ytmusic-lib-tracker/master/docs/assets/images/end_message.JPG) 
-
-Press `Enter` to close application. Then go to the main application folder.
-All your library has been exported and saved in CSV file. 
-With default settings you can find it in `output\export` directory. 
-CSV file is using `|` as column separator. 
+With default settings you can find the results in `output\export`. 
+CSV file is using `|` as column separator. It contains following columns:
+`Artists,Title,Album,VideoId,SetVideoId,Playlist,PlaylistId,IsAvailable`
 
 ### Changelog 
-If you will run export for the second time CSV file with changelog data will be created. 
+After successfull export, CSV file with changelog data will be created. 
 With default settings you can find it in `output\changelog` directory.
 
 Changelog will contain:
@@ -100,7 +101,27 @@ If you want to change the account from you are importing data:
 3. Run `YTMusicLibTracker.exe`
 4. You will be asked to paste request headers again, so repeat the procedure described in [Authentication](#authentication) section.
    This time you should be logged in to your second youtube account.
-    
+
+### Summary of transfer from GPM
+Warning: For some users this feature can be unavailable as Google Play Music is shutting down and in some countries it's no longer accessible.
+So it won't be possible to export your GPM library. You can try to workaround it by opening GPM with deeper link instead of Home Page.
+For example this one: [Go to GPM](https://play.google.com/music/listen?u=1#/artists)
+
+If you want to compare export results from Google Play Music and see what happened after transferring your library to YTM:
+
+1. Run `YTMusicLibTracker.exe` and create export file. 
+1. Create csv file with exported google play music playlists using [gmusis-playlist.js](https://github.com/soulfx/gmusic-playlist.js).
+(Check its documentation for details). Use Google Chrome as it may no longer work in firefox.
+2. Move that file to directory with export results (by default it's `/output/export`). 
+3. Open `config.ini` from app's main folder.
+4. In `[Export]` section:
+   * change `skip_export` option to `1`      
+5. In `[Changelog]` section:
+    * change `auto_detect` option to `0` 
+    * set `current_file` option as path to your export file from YTM (The one from first step)
+    * set `previous_file` option as path to your export file from GPM (The one from second step)
+6. Finally, you can run `YTMusicLibTracker.exe` again. Now created changelog will compare your GPM and YTM libraries.
+7. Revert your `config.ini` file to default options, by replacing its content with this: [Config.ini](https://raw.githubusercontent.com/czifumasa/ytmusic-lib-tracker/master/config.ini)
 
 ### Manual Changelog
 With default behaviour, your youtube music library will be exported and changelog will be created based on comparison of current and previous exports.
@@ -111,21 +132,6 @@ If you want to compare specific files:
 3. In `[CHANGELOG]` section change `auto_detect` option to `0` 
 4. In `[CHANGELOG]` section modify `previous_file` and `current_file` with the paths to file you want to use in comparison
 5. Save `config.ini` file.
-
-### Summary of transfer from GPM
-Warning: For some users this feature can be unavailable as Google Play Music is shutting down and in some countries it's no longer accessible.
-So it won't be possible to export your GPM library. You can try to workaround it by opening GPM with deeper link instead of Home Page.
-For example this one: [Go to GPM](https://play.google.com/music/listen?u=1#/artists)
-
-If you want to compare export results from Google Play Music and see what happened after transferring your library to YTM,
-you can create csv file with exported google play music playlists using [gmusis-playlist.js](https://github.com/soulfx/gmusic-playlist.js).
-(Check its documentation for details).
-
-Next, move that file to directory with export results (by default it's `/output/export`). 
-Then open `config.ini`. In `[Changelog]` section change `auto_detect` option to `0` and set `previous_file` as path to your export file from GPM
-and `current_file` as path to your export file from YTM.
-  
-Finally, you can run `YTMusicLibTracker.exe`. Now created changelog will compare your GPM and YTM libraries.
 
 ## Contribution
 

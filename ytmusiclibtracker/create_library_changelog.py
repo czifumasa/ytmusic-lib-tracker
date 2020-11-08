@@ -123,15 +123,17 @@ def create_library_changelog():
     log('CHANGELOG')
     log('-----------------------------------------------------------------------', True)
     initialize_global_params_from_config_file()
-    if previous_export_file and current_export_file:
-
-        log('Previous export file: ')
-        log(os.path.abspath(previous_export_file), True)
-        previous_song_rows = import_track_records_from_csv_file(previous_export_file)
-        log('Current export file: ')
-        log(os.path.abspath(current_export_file), True)
-        log('Creating changelog...', True)
-        current_song_rows = import_track_records_from_csv_file(current_export_file)
+    if current_export_file:
+        previous_song_rows = []
+        current_song_rows = []
+        if previous_export_file:
+            log('Previous export file: ')
+            log(os.path.abspath(previous_export_file))
+            previous_song_rows.extend(import_track_records_from_csv_file(previous_export_file))
+        log('\nCurrent export file: ')
+        log(os.path.abspath(current_export_file))
+        current_song_rows.extend(import_track_records_from_csv_file(current_export_file))
+        log('\nFiles loaded successfully, Creating changelog...', True)
 
         track_matches = create_match_results(previous_song_rows, current_song_rows)
         duplicates = create_duplicates_results(current_song_rows)
@@ -142,8 +144,6 @@ def create_library_changelog():
         filename = export_track_matches_to_csv_file(changelog_results)
         log('Changelog has been created. File with results has been saved in:')
         log(filename, True)
-    elif (not previous_export_file) and current_export_file:
-        log('Changelog skipped. Only one export file exists.', True)
     else:
         log('Changelog cannot be created. Previous and Current Export files not found.', True)
 

@@ -34,6 +34,7 @@ def get_list_of_rows_from_file(filename):
 
 def get_convert_function_by_headers(header):
     if header == get_ytmlt_export_headers():
+        log('File recognized as export results from Youtube Music.')
         return lambda row: row
     if header == get_gpm_export_headers():
         log('File recognized as export results from Google Play Music.')
