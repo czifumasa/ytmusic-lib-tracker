@@ -93,7 +93,7 @@ Changelog will contain:
 <details>
      <summary>Example with changelog [CLICK]</summary>
            
-![IMAGE](https://raw.githubusercontent.com/czifumasa/ytmusic-lib-tracker/master/docs/assets/images/csv_example.jpg)
+![IMAGE](https://raw.githubusercontent.com/czifumasa/ytmusic-lib-tracker/master/docs/assets/images/csv_examples.jpg)
 </details> 
 
 ## Advanced Usage
