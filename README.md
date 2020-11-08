@@ -90,6 +90,12 @@ Changelog will contain:
 * Songs where metadata has been changed by youtube
 * All other songs that has not been changed
 
+<details>
+     <summary>Example with changelog [CLICK]</summary>
+           
+![IMAGE](https://raw.githubusercontent.com/czifumasa/ytmusic-lib-tracker/master/docs/assets/images/csv_example.jpg)
+</details> 
+
 ## Advanced Usage
 
 ### Switch youtube account
