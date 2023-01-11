@@ -29,7 +29,7 @@ class TrackRecord:
         return False
 
     def __hash__(self):
-        return hash((self.full_name, get_comparable_text(self.playlist_name), self.is_available))
+        return hash((self.full_name, get_comparable_text(self.playlist_id), self.is_available))
 
     def is_equal_by_id(self, other):
         if self.is_equal_by_playlist(other) and self.video_id and other.video_id:
