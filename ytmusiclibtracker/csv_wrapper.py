@@ -10,7 +10,7 @@ def create_csv_with_list_of_dict(output_dir, filename, headers, list_of_rows, wi
         output_dir, filename + '.csv')
 
     with io.open(full_name, 'w', encoding="utf-8") as csv_file:
-        file_writer = csv.writer(csv_file, delimiter='|', quotechar='`', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
+        file_writer = csv.writer(csv_file, delimiter='|', quotechar='"', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
         file_writer.writerow(headers)
         for row in list_of_rows:
             file_writer.writerow(row)
@@ -23,6 +23,7 @@ def get_list_of_rows_from_file(filename):
         # detect delimiter
         temp_lines = csv_file.readline() + '\n' + csv_file.readline()
         dialect = csv.Sniffer().sniff(temp_lines, delimiters="|,")
+        dialect.quotechar = '"'
         csv_file.seek(0)
 
         file_reader = csv.reader(csv_file, dialect)
