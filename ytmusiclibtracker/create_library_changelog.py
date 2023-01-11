@@ -1,6 +1,7 @@
 from ytmusiclibtracker.TrackRecord import TrackRecord
 from ytmusiclibtracker.csv_wrapper import *
 from ytmusiclibtracker.track_matcher import *
+import pyperclip
 
 output_dir = None
 previous_export_file = None
@@ -142,8 +143,10 @@ def create_library_changelog():
         # setup the output directory, create it if needed
         create_dir_if_not_exist(output_dir)
         filename = export_track_matches_to_csv_file(changelog_results)
+        pyperclip.copy(os.path.basename(filename))
         log('Changelog has been created. File with results has been saved in:')
         log(filename, True)
+        log('Filename saved to the clipboard.')
     else:
         log('Changelog cannot be created. Previous and Current Export files not found.', True)
 
