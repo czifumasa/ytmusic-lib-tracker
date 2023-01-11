@@ -11,7 +11,7 @@ setup(
     description='Useful tools for youtube music. Exporting library to csv, tracking changes in library, summary of transfer from GPM',
     long_description=open('README.md').read(),
     options={"build_exe": {
-        'packages': ['ytmusicapi', 'unidecode'],
+        'packages': ['ytmusicapi', 'unidecode', 'multiprocessing'],
         'excludes': ['tkinter', 'test', 'unittest', 'pydoc_data'],
         'include_files': ['config.ini'],
         'optimize': 2,
