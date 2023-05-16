@@ -43,12 +43,13 @@ def get_songs_from_playlist(api, playlist_id):
     playlist = api.get_playlist(playlist_id, 5000)
 
     log('Fetching tracks from \'' + playlist['title'] + '\' playlist...')
-    if playlist['trackCount'] != len(playlist['tracks']):
-        log('Invalid Response: ' + str(len(playlist['tracks'])) + '/' + str(playlist['trackCount']) + ', retrying...')
+    tracks = playlist.get('tracks', [])
+    if playlist['trackCount'] != len(tracks):
+        log('Invalid Response: ' + str(len(tracks)) + '/' + str(playlist['trackCount']) + ', retrying...')
         playlist = api.get_playlist(playlist_id, 5000)
 
-    log('Fetched ' + str(len(playlist['tracks'])) + ' tracks from \'' + playlist['title'] + '\' playlist', True)
-    return playlist['tracks']
+    log('Fetched ' + str(len(tracks)) + ' tracks from \'' + playlist['title'] + '\' playlist', True)
+    return tracks
 
 
 def get_all_uploaded_songs(api):
