@@ -80,3 +80,12 @@ python create_exe.py build
 
 In `build` directory there will be a folder containing libs and ytmusiclibtracker.exe.
 
+##### Run with local ytmusicapi build
+
+In order to test with local ytmusicapi version run:
+
+```
+pip uninstall ytmusicapi
+pip install ytmusicapi path/to/local/ytmusicapi
+```
+
