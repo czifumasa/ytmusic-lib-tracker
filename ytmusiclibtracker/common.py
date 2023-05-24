@@ -3,7 +3,6 @@ import configparser
 import os
 import re
 import string
-import sys
 from datetime import datetime
 from difflib import SequenceMatcher
 

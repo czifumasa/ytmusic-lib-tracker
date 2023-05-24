@@ -1,25 +1,41 @@
-import platform
-
-from ytmusicapi import YTMusic
+import ytmusicapi
 
 from ytmusiclibtracker.common import *
 
 
 def open_api():
     log('Logging into YouTube Music...', True)
+    api = setup_api()
+    log('Login Successful.', True)
+    return api
+
+
+def setup_api():
     if not os.path.isfile('headers_auth.json'):
         headers_raw = []
         log('Please paste here the request headers from your browser and then press \'Enter\' twice to continue:')
+        buffer = ''
         while True:
             line = input()
-            if line:
-                headers_raw.append(line+'\n')
+            # If line ends with ':' then it's copied Chromium Headers. They need some parsing before headers_raw can
+            # be sent to ytmusicapi. Debug here if setup fails with missing headers error.
+            if len(line) > 0 and line[-1] == ':':
+                buffer = line + ' '
             else:
+                headers_raw.append(buffer + line + '\n')
+            if not line:
                 break
-        YTMusic.setup(filepath='headers_auth.json', headers_raw=''.join(headers_raw))
-    api = YTMusic('headers_auth.json')
-    log('Login Successful.', True)
-    return api
+        ytmusicapi.setup(filepath='headers_auth.json', headers_raw=''.join(headers_raw))
+    try:
+        return ytmusicapi.YTMusic('headers_auth.json')
+    except Exception as error:
+        log('There was a problem with login to Youtube Music.', True)
+        if "Could not detect credential type" in (str(error)):
+            log('Please setup your login request headers again.', False)
+            os.remove('headers_auth.json')
+            return setup_api()
+        else:
+            raise error
 
 
 def get_all_songs_from_my_library(api):
