@@ -16,5 +16,5 @@ setup(
         'include_files': ['config.ini'],
         'optimize': 2,
     }},
-    executables=[Executable('ytmusiclibtracker.py', base='console', icon='ytmlt.ico', targetName='YTMusicLibTracker')]
+    executables=[Executable('ytmusiclibtracker.py', base='console', icon='ytmlt.ico', target_name='YTMusicLibTracker')]
 )
