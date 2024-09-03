@@ -6,7 +6,7 @@ setup(
     author='Łukasz Lenart',
     author_email='lukasz.lenart912@gmail.com',
     packages=['ytmusiclibtracker'],
-    install_requires=['ytmusicapi >=1.7.4', 'unidecode', 'pyperclip >= 1.8.2'],
+    install_requires=['ytmusicapi >=1.8.1', 'unidecode', 'pyperclip >= 1.8.2'],
     version='1.4',
     license='MIT',
     description='Useful tools for youtube music. Exporting library to csv, tracking changes in library, summary of transfer from GPM',
