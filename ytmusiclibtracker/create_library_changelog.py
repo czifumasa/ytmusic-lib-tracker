@@ -1,11 +1,18 @@
+import json
+import sys
+
+import pyperclip
+
 from ytmusiclibtracker.TrackRecord import TrackRecord
 from ytmusiclibtracker.csv_wrapper import *
 from ytmusiclibtracker.track_matcher import *
-import pyperclip
+from ytmusiclibtracker.ytm_api_wrapper import *
 
 output_dir = None
 previous_export_file = None
 current_export_file = None
+previous_export_type = None
+current_export_type = None
 
 
 def initialize_global_params_from_config_file():
@@ -18,29 +25,72 @@ def initialize_global_params_from_config_file():
 
 
 def find_and_set_previous_and_current_file(config):
-    global previous_export_file, current_export_file
+    global previous_export_file, current_export_file, previous_export_type, current_export_type
     auto_detect = get_int_value_from_config(config, 'CHANGELOG', "auto_detect")
     if auto_detect > 0:
         auto_detect_dir = config['CHANGELOG']["auto_detect_dir"]
-        list_of_filenames = get_list_of_csv_files_with_timestamp_from_dir(auto_detect_dir, 'exported_songs')
-        if len(list_of_filenames) == 1:
-            current_export_file = auto_detect_dir + '\\' + list_of_filenames[0]
-        elif len(list_of_filenames) >= 2:
-            list_of_filenames.sort(reverse=True)
-            current_export_file = auto_detect_dir + '\\' + list_of_filenames[0]
-            previous_export_file = auto_detect_dir + '\\' + list_of_filenames[1]
+
+        # Look for both CSV and JSON files
+        csv_files = get_list_of_csv_files_with_timestamp_from_dir(auto_detect_dir, 'exported_songs')
+        json_files = get_list_of_files_with_timestamp_from_dir(auto_detect_dir, 'exported_songs', '.json')
+
+        # Combine and sort all export files by date
+        all_export_files = []
+        for filename in csv_files:
+            all_export_files.append({'filename': filename, 'type': 'CSV'})
+        for filename in json_files:
+            all_export_files.append({'filename': filename, 'type': 'JSON'})
+
+        # Sort by date (newest first)
+        if all_export_files:
+            all_export_files.sort(key=lambda x: x['filename'], reverse=True)
+
+        if len(all_export_files) == 1:
+            current_export_file = os.path.join(auto_detect_dir, all_export_files[0]['filename'])
+            current_export_type = all_export_files[0]['type']
+        elif len(all_export_files) >= 2:
+            current_export_file = os.path.join(auto_detect_dir, all_export_files[0]['filename'])
+            current_export_type = all_export_files[0]['type']
+            previous_export_file = os.path.join(auto_detect_dir, all_export_files[1]['filename'])
+            previous_export_type = all_export_files[1]['type']
         else:
             throw_error(
-                'Error: Auto detect input files failed.'
-                '\nCould not find previous and current file in \'' + auto_detect_dir + '\' directory.'
-                '\nVerify your config.ini file if \'auto_detect_dir\' is set correctly.'
-                '\nThis could also happen if you renamed files. In that case, please change \'auto_detect\' to 0,'
-                '\nthen set \'previous_file\' and \'current_file\' manually.')
+                f"Error: Auto detect input files failed.\n"
+                f"Could not find previous and current file in '{auto_detect_dir}' directory.\n"
+                f"Verify your config.ini if 'auto_detect_dir' is set correctly.\n"
+                f"If files were renamed, set 'auto_detect' to 0 and specify 'previous_file' and 'current_file' manually."
+            )
     else:
         previous_export_file = config['CHANGELOG']["previous_file"] if os.path.isfile(
             config['CHANGELOG']["previous_file"]) else None
         current_export_file = config['CHANGELOG']["current_file"] if os.path.isfile(
             config['CHANGELOG']["current_file"]) else None
+
+        # Determine file types based on extension
+        if previous_export_file:
+            previous_export_type = 'JSON' if previous_export_file.lower().endswith('.json') else 'CSV'
+        if current_export_file:
+            current_export_type = 'JSON' if current_export_file.lower().endswith('.json') else 'CSV'
+
+
+def get_list_of_files_with_timestamp_from_dir(directory, filename_prefix, extension):
+    """Get a list of files with specified extension and timestamp from the directory."""
+    if not os.path.isdir(directory):
+        return []
+    try:
+        files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))
+                 and f.startswith(filename_prefix) and f.endswith(extension)]
+        return files
+    except:
+        return []
+
+
+def import_track_records(filename, file_type):
+    """Import track records from either CSV or JSON file"""
+    if file_type == 'CSV':
+        return import_track_records_from_csv_file(filename)
+    else:  # JSON
+        return import_track_records_from_json_file(filename)
 
 
 def import_track_records_from_csv_file(filename):
@@ -50,6 +100,64 @@ def import_track_records_from_csv_file(filename):
         convert_fnc = get_convert_function_by_headers(csv_rows[0])
         return [TrackRecord(convert_fnc(csv_row)) for csv_row in csv_rows[1:]]
     return []
+
+
+def import_track_records_from_json_file(filename):
+    """Parse the JSON file and convert the data to TrackRecord objects"""
+    try:
+        with open(filename, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+
+        track_records = []
+
+        # Process library songs
+        if 'library' in data:
+            for song in data['library']:
+                track_record = convert_song_to_track_record(song, {'id': 'Library', 'name': 'Library'})
+                if track_record:
+                    track_records.append(track_record)
+
+        # Process uploaded songs
+        if 'uploaded' in data:
+            for song in data['uploaded']:
+                track_record = convert_song_to_track_record(song, {'id': 'Uploaded', 'name': 'Uploaded'})
+                if track_record:
+                    track_records.append(track_record)
+
+        # Process playlists
+        if 'playlists' in data:
+            for playlist_id, playlist_data in data['playlists'].items():
+                playlist = {'id': playlist_id, 'name': playlist_data.get('name', '')}
+                for song in playlist_data.get('songs', []):
+                    track_record = convert_song_to_track_record(song, playlist)
+                    if track_record:
+                        track_records.append(track_record)
+
+        return track_records
+    except Exception as e:
+        log(f"Error reading JSON file: {str(e)}", True)
+        return []
+
+
+def convert_song_to_track_record(song, playlist):
+    """Convert a song from JSON format to TrackRecord object"""
+    try:
+        # Create a dictionary with the required fields for TrackRecord
+        track_data = {
+            'artists': song_artists_string_representation(song) or '',
+            'title': song.get('title', '') or '',
+            'album': song_album_string_representation(song.get('album', {}) or {}) or '',
+            'videoId': song.get('videoId', '') or '',
+            'setVideoId': set_video_id_string_representation(song) or '',
+            'playlist': playlist.get('name', '') or '',
+            'playlistId': playlist.get('id', '') or '',
+            'availability': song_availability_status(song) or ''
+        }
+
+        return TrackRecord(list(track_data.values()))
+    except Exception as e:
+        log(f"Error converting song to TrackRecord: {str(e)}", False)
+        return None
 
 
 def export_track_matches_to_csv_file(matches):
@@ -66,13 +174,11 @@ def export_track_matches_to_csv_file(matches):
     return create_csv_with_list_of_dict(output_dir, 'change_log', headers, csv_rows, True)
 
 
-
 def get_sort_function_for_track_matches():
     return lambda row: (row[2] if row[2] else row[3], row[4] if row[4] else row[5], row[8] if row[8] else row[9])
 
 
 def create_match_results(previous_list, current_list):
-    song_is_private = []
     match_results = []
 
     unprocessed_tracks = set(previous_list)
@@ -127,13 +233,18 @@ def create_library_changelog():
     if current_export_file:
         previous_song_rows = []
         current_song_rows = []
+
         if previous_export_file:
             log('Previous export file: ')
             log(os.path.abspath(previous_export_file))
-            previous_song_rows.extend(import_track_records_from_csv_file(previous_export_file))
+            log(f'File type: {previous_export_type}')
+            previous_song_rows.extend(import_track_records(previous_export_file, previous_export_type))
+
         log('\nCurrent export file: ')
         log(os.path.abspath(current_export_file))
-        current_song_rows.extend(import_track_records_from_csv_file(current_export_file))
+        log(f'File type: {current_export_type}')
+        current_song_rows.extend(import_track_records(current_export_file, current_export_type))
+
         log('\nFiles loaded successfully, Creating changelog...', True)
 
         track_matches = create_match_results(previous_song_rows, current_song_rows)

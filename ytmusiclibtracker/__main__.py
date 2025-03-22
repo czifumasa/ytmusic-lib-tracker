@@ -1,9 +1,10 @@
-import sys, traceback
+import sys
+import traceback
 from timeit import default_timer as timer
 
 from ytmusiclibtracker.common import log
 from ytmusiclibtracker.create_library_changelog import create_library_changelog
-from ytmusiclibtracker.export_playlists import export_to_csv
+from ytmusiclibtracker.export_playlists import export_to_file
 
 
 def changelog():
@@ -11,7 +12,7 @@ def changelog():
 
 
 def export():
-    export_to_csv()
+    export_to_file()
 
 
 def show_exception_and_exit(exc_type, exc_value, tb):
@@ -24,7 +25,7 @@ def main():
     sys.excepthook = show_exception_and_exit
     log('Welcome in YTMusic-Lib-Tracker!\n')
     start = timer()
-    export_to_csv()
+    export_to_file()
     create_library_changelog()
     end = timer()
     log('END')
@@ -36,4 +37,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
