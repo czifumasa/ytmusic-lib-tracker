@@ -113,23 +113,23 @@ def import_track_records_from_json_file(filename):
         # Process library songs
         if 'library' in data:
             for song in data['library']:
-                track_record = convert_song_to_track_record(song, {'id': 'Library', 'name': 'Library'})
+                track_record = convert_song_to_track_record(song, {'id': 'Library', 'title': 'Library'})
                 if track_record:
                     track_records.append(track_record)
 
         # Process uploaded songs
         if 'uploaded' in data:
             for song in data['uploaded']:
-                track_record = convert_song_to_track_record(song, {'id': 'Uploaded', 'name': 'Uploaded'})
+                track_record = convert_song_to_track_record(song, {'id': 'Uploaded', 'title': 'Uploaded'})
                 if track_record:
                     track_records.append(track_record)
 
         # Process playlists
         if 'playlists' in data:
-            for playlist_id, playlist_data in data['playlists'].items():
-                playlist = {'id': playlist_id, 'name': playlist_data.get('name', '')}
-                for song in playlist_data.get('songs', []):
-                    track_record = convert_song_to_track_record(song, playlist)
+            for playlist_data in data['playlists']:
+
+                for song in playlist_data.get('tracks', []):
+                    track_record = convert_song_to_track_record(song, playlist_data)
                     if track_record:
                         track_records.append(track_record)
 
@@ -149,7 +149,7 @@ def convert_song_to_track_record(song, playlist):
             'album': song_album_string_representation(song.get('album', {}) or {}) or '',
             'videoId': song.get('videoId', '') or '',
             'setVideoId': set_video_id_string_representation(song) or '',
-            'playlist': playlist.get('name', '') or '',
+            'playlist': playlist.get('title', '') or '',
             'playlistId': playlist.get('id', '') or '',
             'availability': song_availability_status(song) or ''
         }

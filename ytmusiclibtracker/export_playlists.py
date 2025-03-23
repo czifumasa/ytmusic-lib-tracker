@@ -42,33 +42,37 @@ def export_all_songs():
     raw_data = {
         'library': [],
         'uploaded': [],
-        'playlists': {}
+        'playlists': []
     }
 
     # Collect data for both export types
     library_songs = get_all_songs_from_my_library(api)
     uploaded_songs = get_all_uploaded_songs(api)
-    playlists = get_my_playlist_ids_and_names(api)
+    playlist_ids = get_my_playlist_ids(api)
 
     # Process for CSV export
-    export_result.extend(export_songs(library_songs, {'id': 'Library', 'name': 'Library'}))
-    export_result.extend(export_songs(uploaded_songs, {'id': 'Uploaded', 'name': 'Uploaded'}))
+    export_result.extend(export_songs(library_songs, {'id': 'Library', 'title': 'Library'}))
+    export_result.extend(export_songs(uploaded_songs, {'id': 'Uploaded', 'title': 'Uploaded'}))
 
     # Store raw data for JSON export
     raw_data['library'] = library_songs
     raw_data['uploaded'] = uploaded_songs
 
     # Process playlists
-    for playlist in playlists:
-        songs = get_songs_from_playlist(api, playlist['id'])
+    for playlist_id in playlist_ids:
+        playlist = get_playlist_by_id(api, playlist_id)
+        tracks = playlist.get('tracks', [])
         # For CSV
-        export_result.extend(export_songs(songs, playlist))
+        export_result.extend(export_songs(tracks, playlist))
         # For JSON
-        raw_data['playlists'][playlist['id']] = {
+        raw_data['playlists'].append({
             'id': playlist['id'],
-            'name': playlist['name'],
-            'songs': songs
-        }
+            'title': playlist['title'],
+            'tracks': tracks,
+            'description': playlist['description'],
+            'privacy': playlist['privacy'],
+            'owned': playlist['owned']
+        })
 
     return export_result, raw_data
 

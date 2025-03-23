@@ -46,16 +46,15 @@ def get_all_songs_from_my_library(api):
     return library_songs
 
 
-# returns [{id: playlistId, name: playlistName},...]
-def get_my_playlist_ids_and_names(api):
+def get_my_playlist_ids(api):
     my_playlists = api.get_library_playlists(1000)
     playlist_ids = []
     for playlist in my_playlists:
-        playlist_ids.append({'id': playlist['playlistId'], 'name': playlist['title']})
+        playlist_ids.append(playlist['playlistId'])
     return playlist_ids
 
 
-def get_songs_from_playlist(api, playlist_id):
+def get_playlist_by_id(api, playlist_id):
     playlist = api.get_playlist(playlist_id, 5000)
 
     log('Fetching tracks from \'' + playlist['title'] + '\' playlist...')
@@ -65,7 +64,7 @@ def get_songs_from_playlist(api, playlist_id):
         playlist = api.get_playlist(playlist_id, 5000)
 
     log('Fetched ' + str(len(tracks)) + ' tracks from \'' + playlist['title'] + '\' playlist', True)
-    return tracks
+    return playlist
 
 
 def get_all_uploaded_songs(api):
@@ -84,7 +83,7 @@ def export_songs(songs, playlist):
                     song_album_string_representation(song['album']),
                     song['videoId'],
                     set_video_id_string_representation(song),
-                    playlist['name'],
+                    playlist['title'],
                     playlist['id'],
                     song_availability_status(song)]
         export_result.append(song_row)
