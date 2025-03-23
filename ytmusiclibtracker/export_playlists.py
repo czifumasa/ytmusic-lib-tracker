@@ -1,7 +1,7 @@
 import sys
 
 from ytmusiclibtracker.csv_wrapper import *
-from ytmusiclibtracker.json_wrapper import create_json_with_row_data
+from ytmusiclibtracker.json_wrapper import create_json_with_raw_data
 from ytmusiclibtracker.ytm_api_wrapper import *
 
 skip_export = False
@@ -95,7 +95,7 @@ def export_to_file():
             log(filename, True)
             return export_result
         else:  # JSON export
-            filename = create_json_with_row_data(output_dir, 'exported_songs', raw_data, True)
+            filename = create_json_with_raw_data(output_dir, 'exported_songs', raw_data, True)
             log('Export has been completed. JSON file with results has been saved in:')
             log(filename, True)
             return raw_data
