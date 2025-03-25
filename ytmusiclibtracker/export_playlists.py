@@ -10,11 +10,6 @@ output_type = "CSV"  # Default to CSV
 api = None
 
 
-def validate_config_file():
-    if not os.path.isfile('config.ini'):
-        throw_error('Configuration file not found. Please make sure that \'config.ini\' is in the main directory.')
-
-
 def initialize_global_params_from_config_file():
     config = get_configuration_from_file('config.ini')
 
@@ -87,7 +82,7 @@ def export_to_file():
 
     if not skip_export:
         export_result, raw_data = export_all_songs()
-        # setup the output directory, create it if needed
+        #  setup output directory, create it if needed
         create_dir_if_not_exist(output_dir)
 
         if output_type == "CSV":

@@ -1,6 +1,7 @@
 from typing import List
 
 import ytmusicapi
+from ytmusicapi.exceptions import YTMusicServerError
 
 from ytmusiclibtracker.common import *
 
@@ -8,7 +9,14 @@ from ytmusiclibtracker.common import *
 def open_api():
     log('Logging into YouTube Music...', True)
     api = setup_api()
-    log('Login Successful.', True)
+    log('Login successful.', True)
+    return api
+
+
+def open_unauthorized_api():
+    log('Setting unauthorized connection to YouTube Music...', True)
+    api = ytmusicapi.YTMusic()
+    log('Setting successful.', True)
     return api
 
 
@@ -46,6 +54,17 @@ def get_all_songs_from_my_library(api):
 
     log('Fetched ' + str(len(library_songs)) + ' tracks from Library', True)
     return library_songs
+
+
+def search_song(api, video_id):
+    try:
+        search_result = api.get_watch_playlist(video_id)
+        for song in search_result.get('tracks', []):
+            if song.get('videoId') == video_id:
+                return song
+    except YTMusicServerError as e:
+        log(f'Error fetching song for video_id {video_id}: {str(e)}', True)
+    return None
 
 
 def get_my_playlist_ids(api):

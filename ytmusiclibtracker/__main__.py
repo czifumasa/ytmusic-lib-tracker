@@ -5,6 +5,7 @@ from timeit import default_timer as timer
 from ytmusiclibtracker.common import log
 from ytmusiclibtracker.create_library_changelog import create_library_changelog
 from ytmusiclibtracker.export_playlists import export_to_file
+from ytmusiclibtracker.import_playlists import import_from_file
 
 
 def changelog():
@@ -13,6 +14,10 @@ def changelog():
 
 def export():
     export_to_file()
+
+
+def reverse():
+    import_from_file()
 
 
 def show_exception_and_exit(exc_type, exc_value, tb):

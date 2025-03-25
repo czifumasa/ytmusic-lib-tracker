@@ -12,5 +12,6 @@ setup(
     description='Useful tools for youtube music. Exporting library to csv, tracking changes in library, summary of transfer from GPM',
     long_description=open('README.md').read(),
     entry_points={'console_scripts': ['ytmlt-export=ytmusiclibtracker.__main__:export',
-                                      'ytmlt-changelog=ytmusiclibtracker.__main__:changelog']}
+                                      'ytmlt-changelog=ytmusiclibtracker.__main__:changelog',
+                                      'ytmlt-reverse=ytmusiclibtracker.__main__:reverse']}
 )

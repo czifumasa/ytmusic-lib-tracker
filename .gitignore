@@ -4,6 +4,7 @@ build/
 dist/
 .venv/
 .idea/
+input/
 output/
 __pycache__/
 *.egg-info/
