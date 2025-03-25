@@ -3,6 +3,7 @@
 build/
 dist/
 .idea/
+input/
 output/
 __pycache__/
 *.egg-info/

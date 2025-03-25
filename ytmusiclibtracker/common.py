@@ -39,6 +39,11 @@ def get_configuration_from_file(filename):
     return config
 
 
+def validate_config_file():
+    if not os.path.isfile('config.ini'):
+        throw_error('Configuration file not found. Please make sure that \'config.ini\' is in the main directory.')
+
+
 def get_int_value_from_config(config, section, param_name):
     value = config[section][param_name]
     try:
@@ -86,7 +91,6 @@ def current_date_time_to_file_name_string():
 
 
 def get_comparable_text(text, omit_brackets=False):
-
     t = text
 
     if omit_brackets:
