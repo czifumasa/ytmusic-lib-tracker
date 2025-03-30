@@ -11,6 +11,7 @@ class ImportedRelease:
             tracks: List[ImportedTrack],
             primary_artists: List[ImportedArtist],
             complete_track_list: bool,
+            is_user_uploaded: bool,
             release_type: Optional[str] = None,
             code: Optional[str] = None,
             release_year: Optional[str] = None,
@@ -23,6 +24,7 @@ class ImportedRelease:
         self.tracks = tracks
         self.primaryArtists = primary_artists
         self.completeTrackList = complete_track_list
+        self.isUserUploaded = is_user_uploaded
         self.releaseType = release_type
         self.code = code
         self.releaseYear = release_year
@@ -34,9 +36,10 @@ class ImportedRelease:
     def to_dict(self):
         return {
             "title": self.title,
-            "tracks": [track.to_dict() for track in self.tracks],  # Convert tracks to dictionaries
-            "primaryArtists": [artist.to_dict() for artist in self.primaryArtists],  # Convert artists to dictionaries
+            "tracks": [track.to_dict() for track in self.tracks],
+            "primaryArtists": [artist.to_dict() for artist in self.primaryArtists],
             "completeTrackList": self.completeTrackList,
+            "isUserUploaded": self.isUserUploaded,
             "releaseType": self.releaseType,
             "code": self.code,
             "releaseYear": self.releaseYear,
