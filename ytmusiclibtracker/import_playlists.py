@@ -179,7 +179,8 @@ def create_timestamped_import_result(releases, playlists):
         'library': [],
         'uploaded': [],
         'playlists': list(playlists),
-        'releases': list(releases)
+        'releases': list(releases),
+        'timestamp': (import_time or datetime.now()).strftime("%Y-%m-%d %H:%M:%S")
     }
     create_json_with_raw_data(os.path.join('input', 'import'), 'import_results', import_results, True)
 
