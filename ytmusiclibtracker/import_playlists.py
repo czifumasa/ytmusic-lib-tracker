@@ -81,28 +81,30 @@ def map_to_imported_artist(artist):
     return ImportedArtist(artist_name, youtube_channel_id=youtube_channel_id)
 
 
-def map_to_imported_release(release):
+def map_to_imported_release(release, is_user_uploaded: bool):
     if release is None or release['name'] is None:
         return None
 
     release_title = release['name']
     youtube_browse_id = release['id'] or None
     return ImportedRelease(release_title, tracks=[], primary_artists=[], complete_track_list=False,
-                           release_type='UNKNOWN', youtube_browse_id=youtube_browse_id).to_dict()
+                           is_user_uploaded=is_user_uploaded, release_type='UNKNOWN',
+                           youtube_browse_id=youtube_browse_id).to_dict()
 
 
 def map_to_track_info(track):
     if 'videoId' in track:
         imported_track = map_to_imported_track(track)
-        imported_release = map_to_imported_release(track.get('album'))
-        is_available = True if 'isAvailable' not in track else track['isAvailable']
         video_type = track['videoType']
+        is_available = True if 'isAvailable' not in track else track['isAvailable']
+        is_user_uploaded = video_type is None and is_available is True
+        imported_release = map_to_imported_release(track.get('album'), is_user_uploaded)
+
         return {
             'track': imported_track,
             'release': imported_release,
             'isVideo': imported_release is None and is_available is True,
             'isCurrentlyAvailable': is_available,
-            'isUploaded': video_type is None and is_available is True,
             'hasInvalidVideoId': False,
             'failedToFetchFromApi': False,
         }
@@ -112,13 +114,12 @@ def map_to_track_info(track):
 def map_uploaded_track_record_to_track_info(track_record: TrackRecord):
     imported_artists = map_track_record_artists_to_imported_artists(track_record.artists)
     imported_track = ImportedTrack(track_record.video_id, track_record.title, imported_artists).to_dict()
-    imported_release = map_track_record_release_to_imported_release(track_record.album)
+    imported_release = map_track_record_release_to_imported_release(track_record.album, True)
     return {
         'track': imported_track,
         'release': imported_release,
         'isVideo': False,
         'isCurrentlyAvailable': False,
-        'isUploaded': True,
         'hasInvalidVideoId': False,
         'failedToFetchFromApi': True,
     }
@@ -127,13 +128,12 @@ def map_uploaded_track_record_to_track_info(track_record: TrackRecord):
 def map_track_with_invalid_video_id(track_record: TrackRecord):
     imported_artists = map_track_record_artists_to_imported_artists(track_record.artists)
     imported_track = ImportedTrack(track_record.video_id, track_record.title, imported_artists).to_dict()
-    imported_release = map_track_record_release_to_imported_release(track_record.album)
+    imported_release = map_track_record_release_to_imported_release(track_record.album, False)
     return {
         'track': imported_track,
         'release': imported_release,
         'isVideo': False,
         'isCurrentlyAvailable': False,
-        'isUploaded': False,
         'hasInvalidVideoId': True,
         'failedToFetchFromApi': True,
     }
@@ -142,13 +142,12 @@ def map_track_with_invalid_video_id(track_record: TrackRecord):
 def map_track_failed_in_search_api(track_record: TrackRecord):
     imported_artists = map_track_record_artists_to_imported_artists(track_record.artists)
     imported_track = ImportedTrack(track_record.video_id, track_record.title, imported_artists).to_dict()
-    imported_release = map_track_record_release_to_imported_release(track_record.album)
+    imported_release = map_track_record_release_to_imported_release(track_record.album, False)
     return {
         'track': imported_track,
         'release': imported_release,
         'isVideo': False,
         'isCurrentlyAvailable': False,
-        'isUploaded': False,
         'hasInvalidVideoId': False,
         'failedToFetchFromApi': True,
     }
@@ -159,8 +158,8 @@ def map_track_record_artists_to_imported_artists(artists: str) -> List[ImportedA
     return [map_to_imported_artist(artist) for artist in artist_list]
 
 
-def map_track_record_release_to_imported_release(release_name: str):
-    return map_to_imported_release({"name": release_name, "id": None})
+def map_track_record_release_to_imported_release(release_name: str, is_user_uploaded: bool):
+    return map_to_imported_release({"name": release_name, "id": None}, is_user_uploaded)
 
 
 def prepare_json_helper_based_on_current_library():
