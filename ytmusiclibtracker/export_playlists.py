@@ -69,6 +69,8 @@ def export_all_songs():
             'id': playlist['id'],
             'title': playlist['title'],
             'tracks': tracks,
+            'author': playlist.get('author'),  # author key may be missing
+            'year': playlist['year'],
             'description': playlist['description'],
             'privacy': playlist['privacy'],
             'owned': playlist['owned']
