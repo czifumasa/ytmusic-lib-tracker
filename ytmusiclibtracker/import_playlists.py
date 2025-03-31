@@ -218,9 +218,14 @@ def import_from_file():
             playlist_item = ImportedPlaylistItem(trackRecord.is_available, None, trackRecord.video_id,
                                                  trackRecord.set_video_id)
             if trackRecord.playlist_id not in playlists_to_import_by_id:
-                playlists_to_import_by_id[trackRecord.playlist_id] = ImportedPlaylist(trackRecord.playlist_id,
-                                                                                      trackRecord.playlist_name,
-                                                                                      [playlist_item]).to_dict()
+                playlists_to_import_by_id[trackRecord.playlist_id] = ImportedPlaylist(
+                    trackRecord.playlist_id,
+                    trackRecord.playlist_name,
+                    [playlist_item],
+                    None,
+                    None,
+                    'LL'
+                ).to_dict()
             else:
                 playlists_to_import_by_id[trackRecord.playlist_id]['items'].append(playlist_item.to_dict())
 

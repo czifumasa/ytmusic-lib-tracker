@@ -8,7 +8,6 @@ class ImportedPlaylistItem:
             order_number: Optional[int],
             youtube_track_id: Optional[str],
             youtube_set_item_id: Optional[str],
-
     ):
         self.isAvailable = is_available
         self.orderNumber = order_number
