@@ -4,6 +4,7 @@ from typing import List
 
 from ytmusiclibtracker.TrackRecord import TrackRecord
 from ytmusiclibtracker.csv_wrapper import *
+from ytmusiclibtracker.dto.ImportedAccountInfo import ImportedAccountInfo
 from ytmusiclibtracker.dto.ImportedArtist import ImportedArtist
 from ytmusiclibtracker.dto.ImportedPlaylist import ImportedPlaylist
 from ytmusiclibtracker.dto.ImportedPlaylistItem import ImportedPlaylistItem
@@ -18,15 +19,20 @@ helper_json_file = None
 import_time = None
 unauthorized_api = None
 init_helper_json_file = False
+account_name = None
+account_photo_url = None
 
 
 def initialize_global_params_from_config_file():
     config = get_configuration_from_file('config.ini')
 
-    global old_csv_file_import, import_time, current_json_file, init_helper_json_file, helper_json_file
+    global old_csv_file_import, import_time, current_json_file, init_helper_json_file, helper_json_file, account_name, \
+        account_photo_url
     old_csv_file_import = config['REVERSE']["old_csv_file_import"]
     current_json_file = config['REVERSE']["current_json_file"]
     helper_json_file = config['REVERSE']["helper_json_file"]
+    account_name = config['REVERSE']["account_name"]
+    account_photo_url = config['REVERSE']["account_photo_url"]
     import_time_str = config.get("REVERSE", "import_time", fallback=datetime.today())
     import_time = datetime.strptime(import_time_str, "%Y-%m-%d %H:%M:%S")
     if get_int_value_from_config(config, 'REVERSE', "init_helper_json_file") > 0:
@@ -185,7 +191,8 @@ def create_timestamped_import_result(releases, playlists):
         'uploaded': [],
         'playlists': list(playlists),
         'releases': list(releases),
-        'timestamp': (import_time or datetime.now()).isoformat()
+        'accountInfo': ImportedAccountInfo(account_name, account_photo_url,
+                                           (import_time or datetime.now()).isoformat()).to_dict()
     }
     create_json_with_raw_data(os.path.join('input', 'import'), 'import_results', import_results, True)
 
