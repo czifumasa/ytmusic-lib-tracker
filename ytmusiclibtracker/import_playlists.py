@@ -36,10 +36,15 @@ def initialize_global_params_from_config_file():
 def import_track_records_from_csv_file(filename):
     csv_rows = get_list_of_rows_from_file(filename)
 
-    if csv_rows:
-        convert_fnc = get_convert_function_by_headers(csv_rows[0])
-        return [TrackRecord(convert_fnc(csv_row)) for csv_row in csv_rows[1:]]
-    return []
+    if not csv_rows:
+        return []
+
+    convert_fnc = get_convert_function_by_headers(csv_rows[0])
+    return [
+        record
+        for row in csv_rows[1:]
+        if (record := TrackRecord(convert_fnc(row))).set_video_id
+    ]
 
 
 def load_json_file(json_filename):
