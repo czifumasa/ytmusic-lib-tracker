@@ -1,6 +1,6 @@
 import json
 import sys
-from typing import List
+from typing import List, Optional
 
 from ytmusiclibtracker.TrackRecord import TrackRecord
 from ytmusiclibtracker.csv_wrapper import *
@@ -78,11 +78,16 @@ def get_tracks_by_video_id(library, uploaded, playlists):
     return track_map
 
 
-def map_to_imported_track(track):
+def map_to_imported_track(track, track_record: Optional[TrackRecord] = None):
     video_id = track['videoId']
     title = track['title']
-    artists = [map_to_imported_artist(artist) for artist in track['artists'] or []]
-    credited_name = "Unknown Artist" if not artists else None
+    artists = [
+        map_to_imported_artist(artist)
+        for artist in (track['artists'] or [])
+        # Sometimes unavailable tracks are resolved with artist name as "Album Artist"
+        if not (artist.get('name') == "Album Artist" and artist.get('id') is None)
+    ]
+    credited_name = track_record.artists if track_record and not artists else None
     return ImportedTrack(video_id, title, artists, credited_name).to_dict()
 
 
@@ -92,24 +97,29 @@ def map_to_imported_artist(artist):
     return ImportedArtist(artist_name, youtube_channel_id=youtube_channel_id)
 
 
-def map_to_imported_release(release, is_user_uploaded: bool):
+def map_to_imported_release(release, is_user_uploaded: bool, track_record: Optional[TrackRecord] = None):
     if release is None or release['name'] is None:
         return None
 
-    release_title = release['name']
+    # Sometimes unavailable tracks are resolved with album name as "Dave Rock Band Trio"
+    if release['name'] == 'Dave Rock Band Trio' and track_record is not None:
+        release_title = track_record.album
+    else:
+        release_title = release['name']
+
     youtube_browse_id = release['id'] or None
     return ImportedRelease(release_title, tracks=[], primary_artists=[], complete_track_list=False,
                            is_user_uploaded=is_user_uploaded, release_type='UNKNOWN',
                            youtube_browse_id=youtube_browse_id).to_dict()
 
 
-def map_to_track_info(track):
+def map_to_track_info(track, track_record: Optional[TrackRecord] = None):
     if 'videoId' in track:
-        imported_track = map_to_imported_track(track)
+        imported_track = map_to_imported_track(track, track_record)
         video_type = track['videoType']
         is_available = True if 'isAvailable' not in track else track['isAvailable']
         is_user_uploaded = video_type is None and is_available is True
-        imported_release = map_to_imported_release(track.get('album'), is_user_uploaded)
+        imported_release = map_to_imported_release(track.get('album'), is_user_uploaded, track_record)
 
         return {
             'track': imported_track,
@@ -251,7 +261,7 @@ def import_from_file():
                     else:
                         search_song_result = search_song(unauthorized_api, trackRecord.video_id)
                         if search_song_result is not None:
-                            track_info = map_to_track_info(search_song_result)
+                            track_info = map_to_track_info(search_song_result, trackRecord)
                             count_from_api += 1
                         else:
                             track_info = map_track_failed_in_search_api(trackRecord)
