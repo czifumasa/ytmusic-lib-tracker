@@ -87,7 +87,11 @@ def group_list_by_function(seq, function):
 
 
 def current_date_time_to_file_name_string():
-    return datetime.today().strftime('%Y_%m_%d_%H_%M_%S')
+    return date_time_to_file_name_string(datetime.today())
+
+
+def date_time_to_file_name_string(date):
+    return date.strftime('%Y_%m_%d_%H_%M_%S')
 
 
 def get_comparable_text(text, omit_brackets=False):

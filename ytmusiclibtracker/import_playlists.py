@@ -204,7 +204,9 @@ def create_timestamped_import_result(releases, playlists):
         'accountInfo': ImportedAccountInfo(account_name, account_photo_url,
                                            (import_time or datetime.now()).isoformat()).to_dict()
     }
-    create_json_with_raw_data(os.path.join('input', 'import'), 'import_results', import_results, True)
+
+    import_result_filename = 'import_results_' + date_time_to_file_name_string(import_time or datetime.today())
+    create_json_with_raw_data(os.path.join('input', 'import'), import_result_filename, import_results, False)
 
 
 def import_from_file():
