@@ -78,7 +78,7 @@ def get_tracks_by_video_id(library, uploaded, playlists):
     return track_map
 
 
-def map_to_imported_track(track, track_record: Optional[TrackRecord] = None):
+def map_to_imported_track(track, track_record: Optional[TrackRecord] = None) -> ImportedTrack:
     video_id = track['videoId']
     title = track['title']
     artists = [
@@ -91,13 +91,14 @@ def map_to_imported_track(track, track_record: Optional[TrackRecord] = None):
     return ImportedTrack(video_id, title, artists, credited_name).to_dict()
 
 
-def map_to_imported_artist(artist):
+def map_to_imported_artist(artist) -> ImportedArtist:
     artist_name = artist['name'] or ''
     youtube_channel_id = artist['id']
     return ImportedArtist(artist_name, youtube_channel_id=youtube_channel_id)
 
 
-def map_to_imported_release(release, is_user_uploaded: bool, track_record: Optional[TrackRecord] = None):
+def map_to_imported_release(release, is_user_uploaded: bool,
+                            track_record: Optional[TrackRecord] = None) -> ImportedRelease or None:
     if release is None or release['name'] is None:
         return None
 
@@ -179,7 +180,7 @@ def map_track_record_artists_to_imported_artists(artists: str) -> List[ImportedA
     return [map_to_imported_artist(artist) for artist in artist_list]
 
 
-def map_track_record_release_to_imported_release(release_name: str, is_user_uploaded: bool):
+def map_track_record_release_to_imported_release(release_name: str, is_user_uploaded: bool) -> ImportedRelease or None:
     return map_to_imported_release({"name": release_name, "id": None}, is_user_uploaded)
 
 
@@ -239,7 +240,7 @@ def import_from_file():
                          len(trackRecord.video_id) != 11}
     for trackRecord in track_records:
         if trackRecord.playlist_id != TrackRecord.LIBRARY and trackRecord.playlist_id != TrackRecord.UPLOADED:
-            playlist_item = ImportedPlaylistItem(trackRecord.is_available, None, trackRecord.video_id,
+            playlist_item = ImportedPlaylistItem(bool(trackRecord.is_available), None, trackRecord.video_id,
                                                  trackRecord.set_video_id)
             if trackRecord.playlist_id not in playlists_to_import_by_id:
                 playlists_to_import_by_id[trackRecord.playlist_id] = ImportedPlaylist(
