@@ -277,7 +277,7 @@ def import_from_file():
                          len(trackRecord.video_id) != 11}
     for track_record in track_records:
         if track_record.playlist_id != TrackRecord.LIBRARY and track_record.playlist_id != TrackRecord.UPLOADED:
-            playlist_item = ImportedPlaylistItem(bool(track_record.is_available), None, track_record.video_id,
+            playlist_item = ImportedPlaylistItem(bool(int(track_record.is_available)), None, track_record.video_id,
                                                  track_record.set_video_id)
             if track_record.playlist_id not in playlists_to_import_by_id:
                 playlists_to_import_by_id[track_record.playlist_id] = ImportedPlaylist(
