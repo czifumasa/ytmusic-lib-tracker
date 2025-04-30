@@ -184,6 +184,43 @@ def map_track_record_release_to_imported_release(release_name: str, is_user_uplo
     return map_to_imported_release({"name": release_name, "id": None}, is_user_uploaded)
 
 
+def merge_track_record_with_info(track_record: TrackRecord, track_info) -> ImportedTrack:
+    track = ImportedTrack.from_dict(track_info['track'])
+    artists: List[ImportedArtist] = merge_track_record_artists_with_info(track_record, track.primaryArtists)
+    return ImportedTrack(track_record.video_id, track_record.title, artists)
+
+
+def merge_track_record_with_imported_release(track_record: TrackRecord, track_info) -> ImportedRelease or None:
+    if track_info["release"] is None or not track_record.album:
+        return None
+
+    release = ImportedRelease.from_dict(track_info["release"])
+    return ImportedRelease(track_record.album, tracks=release.tracks, primary_artists=release.primaryArtists,
+                           complete_track_list=False,
+                           is_user_uploaded=release.isUserUploaded, release_type='UNKNOWN',
+                           youtube_browse_id=release.youtubeBrowseId)
+
+
+def merge_track_record_artists_with_info(track_record: TrackRecord, artists: List[ImportedArtist]) \
+        -> List[ImportedArtist]:
+    track_record_artists: List[ImportedArtist] = map_track_record_artists_to_imported_artists(track_record.artists)
+    artists_with_filled_ids: List[ImportedArtist] = []
+    for artist in track_record_artists:
+        matched_artist = next((a for a in artists if a.fullName == artist.fullName), None)
+        if matched_artist:
+            enriched_artist = ImportedArtist(
+                full_name=artist.fullName,
+                youtube_channel_id=matched_artist.youtubeChannelId,
+                code=matched_artist.code,
+                localized_full_name=matched_artist.localizedFullName,
+                url=matched_artist.url
+            )
+            artists_with_filled_ids.append(enriched_artist)
+        else:
+            artists_with_filled_ids.append(artist)
+    return artists_with_filled_ids
+
+
 def prepare_json_helper_based_on_current_library():
     current_library = load_json_file(current_json_file)
     if {'library', 'uploaded', 'playlists'}.issubset(current_library):
@@ -238,50 +275,51 @@ def import_from_file():
 
     invalid_video_ids = {trackRecord.video_id for trackRecord in track_records if
                          len(trackRecord.video_id) != 11}
-    for trackRecord in track_records:
-        if trackRecord.playlist_id != TrackRecord.LIBRARY and trackRecord.playlist_id != TrackRecord.UPLOADED:
-            playlist_item = ImportedPlaylistItem(bool(trackRecord.is_available), None, trackRecord.video_id,
-                                                 trackRecord.set_video_id)
-            if trackRecord.playlist_id not in playlists_to_import_by_id:
-                playlists_to_import_by_id[trackRecord.playlist_id] = ImportedPlaylist(
-                    trackRecord.playlist_id,
-                    trackRecord.playlist_name,
+    for track_record in track_records:
+        if track_record.playlist_id != TrackRecord.LIBRARY and track_record.playlist_id != TrackRecord.UPLOADED:
+            playlist_item = ImportedPlaylistItem(bool(track_record.is_available), None, track_record.video_id,
+                                                 track_record.set_video_id)
+            if track_record.playlist_id not in playlists_to_import_by_id:
+                playlists_to_import_by_id[track_record.playlist_id] = ImportedPlaylist(
+                    track_record.playlist_id,
+                    track_record.playlist_name,
                     [playlist_item],
                     None,
                     None,
                     'LL'
                 ).to_dict()
             else:
-                playlists_to_import_by_id[trackRecord.playlist_id]['items'].append(playlist_item.to_dict())
+                playlists_to_import_by_id[track_record.playlist_id]['items'].append(playlist_item.to_dict())
 
-            if trackRecord.video_id not in resolved_tracks:
-                track_info = track_info_by_video_id.get(trackRecord.video_id)
+            if track_record.video_id not in resolved_tracks:
+                track_info = track_info_by_video_id.get(track_record.video_id)
                 if track_info is None:
-                    if trackRecord.video_id in uploaded_video_ids:
-                        track_info = map_uploaded_track_record_to_track_info(trackRecord)
-                    elif trackRecord.video_id in invalid_video_ids:
-                        track_info = map_track_with_invalid_video_id(trackRecord)
+                    if track_record.video_id in uploaded_video_ids:
+                        track_info = map_uploaded_track_record_to_track_info(track_record)
+                    elif track_record.video_id in invalid_video_ids:
+                        track_info = map_track_with_invalid_video_id(track_record)
                     else:
-                        search_song_result = search_song(unauthorized_api, trackRecord.video_id)
+                        search_song_result = search_song(unauthorized_api, track_record.video_id)
                         if search_song_result is not None:
-                            track_info = map_to_track_info(search_song_result, trackRecord)
+                            track_info = map_to_track_info(search_song_result, track_record)
                             count_from_api += 1
                         else:
-                            track_info = map_track_failed_in_search_api(trackRecord)
+                            track_info = map_track_failed_in_search_api(track_record)
                             count_unresolved += 1
-                    track_info_by_video_id[trackRecord.video_id] = track_info
+                    track_info_by_video_id[track_record.video_id] = track_info
 
-                resolved_tracks[trackRecord.video_id] = track_info
+                resolved_tracks[track_record.video_id] = track_info
 
-                release = track_info['release']
+                merged_track = merge_track_record_with_info(track_record, track_info)
+                merged_release = merge_track_record_with_imported_release(track_record, track_info)
 
-                if release and release['youtubeBrowseId']:
-                    release_id = release['youtubeBrowseId']
+                if merged_release and merged_release.youtubeBrowseId:
+                    release_id = merged_release.youtubeBrowseId
                     if release_id not in releases_to_import_by_id:
-                        release['tracks'] = [track_info['track']]
-                        releases_to_import_by_id[release_id] = release
+                        merged_release.tracks = [merged_track]
+                        releases_to_import_by_id[release_id] = merged_release.to_dict()
                     else:
-                        releases_to_import_by_id[release_id]['tracks'].append(track_info['track'])
+                        releases_to_import_by_id[release_id]["tracks"].append(merged_track.to_dict())
 
     log(f'Resolved tracks: {len(resolved_tracks.keys())}', True)
     log(f'Resolved tracks from api: {count_from_api}', True)

@@ -16,6 +16,16 @@ class ImportedArtist:
         self.localizedFullName = localized_full_name
         self.url = url
 
+    @classmethod
+    def from_dict(cls, data: dict) -> "ImportedArtist":
+        return cls(
+            full_name=data["fullName"],
+            youtube_channel_id=data.get("youtubeChannelId"),
+            code=data.get("code"),
+            localized_full_name=data.get("localizedFullName"),
+            url=data.get("url"),
+        )
+
     def to_dict(self):
         return {
             "youtubeChannelId": self.youtubeChannelId,

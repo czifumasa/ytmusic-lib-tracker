@@ -33,6 +33,23 @@ class ImportedRelease:
         self.youtubeBrowseId = youtube_browse_id
         self.youtubePlaylistId = youtube_playlist_id
 
+    @classmethod
+    def from_dict(cls, data: dict) -> "ImportedRelease":
+        return cls(
+            title=data["title"],
+            tracks=[ImportedTrack.from_dict(track) for track in data["tracks"]],
+            primary_artists=[ImportedArtist(**artist) for artist in data["primaryArtists"]],
+            complete_track_list=data["completeTrackList"],
+            is_user_uploaded=data["isUserUploaded"],
+            release_type=data.get("releaseType"),
+            code=data.get("code"),
+            release_year=data.get("releaseYear"),
+            url=data.get("url"),
+            credited_name=data.get("creditedName"),
+            youtube_browse_id=data.get("youtubeBrowseId"),
+            youtube_playlist_id=data.get("youtubePlaylistId"),
+        )
+
     def to_dict(self):
         return {
             "title": self.title,

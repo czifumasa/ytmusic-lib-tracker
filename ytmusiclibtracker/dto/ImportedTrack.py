@@ -20,6 +20,17 @@ class ImportedTrack:
         self.primaryArtists = primary_artists
         self.orderNumber = order_number
 
+    @classmethod
+    def from_dict(cls, data: dict) -> "ImportedTrack":
+        return cls(
+            youtube_track_id=data['youtubeTrackId'],
+            title=data['title'],
+            credited_name=data.get('creditedName'),
+            track_number=data.get('trackNumber'),
+            order_number=data.get('orderNumber'),
+            primary_artists=[ImportedArtist.from_dict(artist) for artist in data["primaryArtists"]],
+        )
+
     def to_dict(self):
         return {
             "youtubeTrackId": self.youtubeTrackId,
