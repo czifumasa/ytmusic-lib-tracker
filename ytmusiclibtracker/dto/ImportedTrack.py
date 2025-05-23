@@ -9,6 +9,7 @@ class ImportedTrack:
             youtube_track_id: str,
             title: str,
             primary_artists: List[ImportedArtist],
+            is_available: bool,
             credited_name: Optional[str] = None,
             track_number: Optional[int] = None,
             order_number: Optional[int] = None
@@ -19,12 +20,14 @@ class ImportedTrack:
         self.trackNumber = track_number
         self.primaryArtists = primary_artists
         self.orderNumber = order_number
+        self.isAvailable = is_available
 
     @classmethod
     def from_dict(cls, data: dict) -> "ImportedTrack":
         return cls(
             youtube_track_id=data['youtubeTrackId'],
             title=data['title'],
+            is_available=data['isAvailable'],
             credited_name=data.get('creditedName'),
             track_number=data.get('trackNumber'),
             order_number=data.get('orderNumber'),
@@ -37,6 +40,7 @@ class ImportedTrack:
             "title": self.title,
             "creditedName": self.creditedName,
             "trackNumber": self.trackNumber,
-            "primaryArtists": [artist.to_dict() for artist in self.primaryArtists],  # Convert artist objects
+            "primaryArtists": [artist.to_dict() for artist in self.primaryArtists],
             "orderNumber": self.orderNumber,
+            "isAvailable": self.isAvailable,
         }

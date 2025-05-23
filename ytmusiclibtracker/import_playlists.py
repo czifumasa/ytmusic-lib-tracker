@@ -135,7 +135,7 @@ def map_to_track_info(track, track_record: Optional[TrackRecord] = None):
 
 def map_uploaded_track_record_to_track_info(track_record: TrackRecord):
     imported_artists = map_track_record_artists_to_imported_artists(track_record.artists)
-    imported_track = ImportedTrack(track_record.video_id, track_record.title, imported_artists).to_dict()
+    imported_track = ImportedTrack(track_record.video_id, track_record.title, imported_artists, True).to_dict()
     imported_release = map_track_record_release_to_imported_release(track_record.album, True)
     return {
         'track': imported_track,
@@ -149,7 +149,7 @@ def map_uploaded_track_record_to_track_info(track_record: TrackRecord):
 
 def map_track_with_invalid_video_id(track_record: TrackRecord):
     imported_artists = map_track_record_artists_to_imported_artists(track_record.artists)
-    imported_track = ImportedTrack(track_record.video_id, track_record.title, imported_artists).to_dict()
+    imported_track = ImportedTrack(track_record.video_id, track_record.title, imported_artists, False).to_dict()
     imported_release = map_track_record_release_to_imported_release(track_record.album, False)
     return {
         'track': imported_track,
@@ -163,7 +163,7 @@ def map_track_with_invalid_video_id(track_record: TrackRecord):
 
 def map_track_failed_in_search_api(track_record: TrackRecord):
     imported_artists = map_track_record_artists_to_imported_artists(track_record.artists)
-    imported_track = ImportedTrack(track_record.video_id, track_record.title, imported_artists).to_dict()
+    imported_track = ImportedTrack(track_record.video_id, track_record.title, imported_artists, False).to_dict()
     imported_release = map_track_record_release_to_imported_release(track_record.album, False)
     return {
         'track': imported_track,
@@ -187,7 +187,7 @@ def map_track_record_release_to_imported_release(release_name: str, is_user_uplo
 def merge_track_record_with_info(track_record: TrackRecord, track_info) -> ImportedTrack:
     track = ImportedTrack.from_dict(track_info['track'])
     artists: List[ImportedArtist] = merge_track_record_artists_with_info(track_record, track.primaryArtists)
-    return ImportedTrack(track_record.video_id, track_record.title, artists)
+    return ImportedTrack(track_record.video_id, track_record.title, artists, bool(int(track_record.is_available)))
 
 
 def merge_track_record_with_imported_release(track_record: TrackRecord, track_info) -> ImportedRelease or None:
