@@ -16,6 +16,7 @@ from ytmusiclibtracker.ytm_api_wrapper import search_song, open_unauthorized_api
 old_csv_file_import = None
 current_json_file = None
 helper_json_file = None
+previous_track_records_file = None
 import_time = None
 unauthorized_api = None
 init_helper_json_file = False
@@ -26,10 +27,11 @@ account_photo_url = None
 def initialize_global_params_from_config_file():
     config = get_configuration_from_file('config.ini')
 
-    global old_csv_file_import, import_time, current_json_file, init_helper_json_file, helper_json_file, account_name, \
+    global old_csv_file_import, import_time, current_json_file, previous_track_records_file, init_helper_json_file, helper_json_file, account_name, \
         account_photo_url
     old_csv_file_import = config['REVERSE']["old_csv_file_import"]
     current_json_file = config['REVERSE']["current_json_file"]
+    previous_track_records_file = config['REVERSE']["previous_track_records_file"]
     helper_json_file = config['REVERSE']["helper_json_file"]
     account_name = config['REVERSE']["account_name"]
     account_photo_url = config['REVERSE']["account_photo_url"]
@@ -53,9 +55,12 @@ def import_track_records_from_csv_file(filename):
     ]
 
 
-def load_json_file(json_filename):
+def load_json_file(json_filename, allow_empty):
     if not os.path.exists(json_filename):
-        throw_error(f'File not found: {current_json_file}')
+        if not allow_empty:
+            throw_error(f'File not found: {json_filename}')
+        else:
+            return {}
 
     try:
         with open(json_filename, 'r', encoding='utf-8') as file:
@@ -222,7 +227,7 @@ def merge_track_record_artists_with_info(track_record: TrackRecord, artists: Lis
 
 
 def prepare_json_helper_based_on_current_library():
-    current_library = load_json_file(current_json_file)
+    current_library = load_json_file(current_json_file, False)
     if {'library', 'uploaded', 'playlists'}.issubset(current_library):
         library = current_library["library"] or []
         uploaded = current_library["uploaded"] or []
@@ -261,8 +266,10 @@ def import_from_file():
     log(f'Using {current_json_file} file as a helper to resolve data faster', True)
     if init_helper_json_file:
         prepare_json_helper_based_on_current_library()
-    track_info_by_video_id = load_json_file(helper_json_file)
+    track_info_by_video_id = load_json_file(helper_json_file, False)
+    previous_track_records_by_key = load_json_file(previous_track_records_file, True)
 
+    current_track_records_by_key = {}
     playlists_to_import_by_id = {}
     releases_to_import_by_id = {}
     resolved_tracks = {}
@@ -276,6 +283,14 @@ def import_from_file():
     invalid_video_ids = {trackRecord.video_id for trackRecord in track_records if
                          len(trackRecord.video_id) != 11}
     for track_record in track_records:
+        current_track_records_by_key[track_record.get_key()] = track_record
+        if track_record.artists.endswith("- Topic"):
+            original_artists = track_record.artists
+            new_artists = previous_track_records_by_key[track_record.get_key()].get('artists') or original_artists
+            track_record.artists = new_artists
+            log(f"Updated artists from '{original_artists}' to '{new_artists}'"
+                f" for track '{track_record.video_id} on '{track_record.playlist_name}' playlist")
+
         if track_record.playlist_id != TrackRecord.LIBRARY and track_record.playlist_id != TrackRecord.UPLOADED:
             playlist_item = ImportedPlaylistItem(bool(int(track_record.is_available)), None, track_record.video_id,
                                                  track_record.set_video_id)
@@ -327,6 +342,11 @@ def import_from_file():
     log(f'Playlists: {len(playlists_to_import_by_id.keys())}', True)
     log(f'Releases: {len(releases_to_import_by_id.keys())}', True)
     create_json_with_raw_data(os.path.join('input', 'import'), 'helper_json_file', track_info_by_video_id, False)
+    create_json_with_raw_data(os.path.join('input', 'import'), 'previous_track_records', {
+        key: value.to_dict()
+        for key, value in current_track_records_by_key.items()
+    },
+                              False)
     create_timestamped_import_result(releases_to_import_by_id.values(), playlists_to_import_by_id.values())
 
 

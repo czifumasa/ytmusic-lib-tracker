@@ -52,9 +52,11 @@ class TrackRecord:
             processed_title_other = get_comparable_text(other.title, True)
             if are_two_texts_similar(processed_artists_self, processed_artists_other, 0.80) \
                     and are_two_texts_similar(processed_title_self, processed_title_other,
-                                              get_similarity_index_based_on_length(processed_title_self, processed_title_other)):
+                                              get_similarity_index_based_on_length(processed_title_self,
+                                                                                   processed_title_other)):
                 return True
-            if (processed_artists_other in processed_artists_self or processed_artists_self in processed_artists_other) and \
+            if (
+                    processed_artists_other in processed_artists_self or processed_artists_self in processed_artists_other) and \
                     (processed_title_self in processed_title_other or processed_title_other in processed_title_self):
                 return True
         return False
@@ -75,9 +77,11 @@ class TrackRecord:
         elif self.playlist_name and other.playlist_name:
             if self.playlist_name == other.playlist_name:
                 return True
-            elif self.playlist_name in [self.YOUR_LIKES, self.THUMBS_UP] and other.playlist_name in [self.YOUR_LIKES, self.THUMBS_UP]:
+            elif self.playlist_name in [self.YOUR_LIKES, self.THUMBS_UP] and other.playlist_name in [self.YOUR_LIKES,
+                                                                                                     self.THUMBS_UP]:
                 return True
-            elif self.playlist_name in [self.LIBRARY, self.UPLOADED] and other.playlist_name in [self.LIBRARY, self.UPLOADED]:
+            elif self.playlist_name in [self.LIBRARY, self.UPLOADED] and other.playlist_name in [self.LIBRARY,
+                                                                                                 self.UPLOADED]:
                 return True
         return False
 
@@ -109,4 +113,18 @@ class TrackRecord:
         return [self.artists, self.title, self.album, self.video_id, self.set_video_id,
                 self.playlist_name, self.playlist_id]
 
+    def get_key(self):
+        return self.set_video_id + '_' + self.playlist_id
 
+    def to_dict(self) -> dict:
+        return {
+            'artists': self.artists,
+            'title': self.title,
+            'album': self.album,
+            'video_id': self.video_id,
+            'set_video_id': self.set_video_id,
+            'playlist_name': self.playlist_name,
+            'playlist_id': self.playlist_id,
+            'is_available': self.is_available,
+            'full_name': self.full_name
+        }
