@@ -62,7 +62,7 @@ def search_song(api, video_id):
         for song in search_result.get('tracks', []):
             if song.get('videoId') == video_id:
                 return song
-    except YTMusicServerError as e:
+    except (YTMusicServerError, KeyError) as e:
         log(f'Error fetching song for video_id {video_id}: {str(e)}', True)
     return None
 

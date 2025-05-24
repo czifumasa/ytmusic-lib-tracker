@@ -13,32 +13,34 @@ from ytmusiclibtracker.dto.ImportedTrack import ImportedTrack
 from ytmusiclibtracker.json_wrapper import create_json_with_raw_data
 from ytmusiclibtracker.ytm_api_wrapper import search_song, open_unauthorized_api
 
-old_csv_file_import = None
-current_json_file = None
-helper_json_file = None
-previous_track_records_file = None
-import_time = None
+old_csv_file_import: Optional[str] = None
+current_json_file: Optional[str] = None
+helper_json_file: Optional[str] = None
+previous_track_records_file: Optional[str] = None
 unauthorized_api = None
-init_helper_json_file = False
-account_name = None
-account_photo_url = None
+init_helper_json_file: bool = False
+account_name: Optional[str] = None
+account_photo_url: Optional[str] = None
+batch_import: bool = False
+batch_old_csv_dir_import: Optional[str] = None
 
 
 def initialize_global_params_from_config_file():
     config = get_configuration_from_file('config.ini')
 
-    global old_csv_file_import, import_time, current_json_file, previous_track_records_file, init_helper_json_file, helper_json_file, account_name, \
-        account_photo_url
+    global old_csv_file_import, current_json_file, previous_track_records_file, init_helper_json_file, \
+        helper_json_file, account_name, account_photo_url, batch_import, batch_old_csv_dir_import
     old_csv_file_import = config['REVERSE']["old_csv_file_import"]
     current_json_file = config['REVERSE']["current_json_file"]
     previous_track_records_file = config['REVERSE']["previous_track_records_file"]
     helper_json_file = config['REVERSE']["helper_json_file"]
     account_name = config['REVERSE']["account_name"]
     account_photo_url = config['REVERSE']["account_photo_url"]
-    import_time_str = config.get("REVERSE", "import_time", fallback=datetime.today())
-    import_time = datetime.strptime(import_time_str, "%Y-%m-%d %H:%M:%S")
+    batch_old_csv_dir_import = config['REVERSE']["batch_old_csv_dir_import"]
     if get_int_value_from_config(config, 'REVERSE', "init_helper_json_file") > 0:
         init_helper_json_file = True
+    if get_int_value_from_config(config, 'REVERSE', "batch_import") > 0:
+        batch_import = True
 
 
 def import_track_records_from_csv_file(filename):
@@ -238,7 +240,7 @@ def prepare_json_helper_based_on_current_library():
         create_json_with_raw_data(os.path.join('input', 'import'), 'helper_json_file', tracks_by_video_id, False)
 
 
-def create_timestamped_import_result(releases, playlists):
+def create_timestamped_import_result(releases, playlists, import_time):
     import_results = {
         'library': [],
         'uploaded': [],
@@ -249,19 +251,37 @@ def create_timestamped_import_result(releases, playlists):
     }
 
     import_result_filename = 'import_results_' + date_time_to_file_name_string(import_time or datetime.today())
-    create_json_with_raw_data(os.path.join('input', 'import'), import_result_filename, import_results, False)
+    create_json_with_raw_data(os.path.join('output', 'reverse'), import_result_filename, import_results, False)
 
 
-def import_from_file():
+def import_from_source():
     log('IMPORT FROM CSV TO MOCK YOUTUBE MUSIC RESPONSE')
     log('-----------------------------------------------------------------------', True)
-    validate_config_file()
+
     initialize_global_params_from_config_file()
+    validate_config_file()
+    if not batch_import:
+        import_from_file(old_csv_file_import)
+    else:
+        source_files = get_list_of_csv_files_with_timestamp_from_dir(batch_old_csv_dir_import, "exported_songs")
+        for source_file in source_files:
+            import_from_file(os.path.join(batch_old_csv_dir_import, source_file))
+
+
+def import_from_file(source_file_name):
+    import_time_str = (
+        source_file_name.split("exported_songs_")[1].split(".csv")[0]
+        if "exported_songs_" in source_file_name else None
+    )
+
+    import_time = datetime.strptime(import_time_str, "%Y_%m_%d_%H_%M_%S")
+
     global unauthorized_api
     unauthorized_api = open_unauthorized_api()
-    log(f'Importing from {old_csv_file_import} file with {import_time} timestamp', True)
+
+    log(f'Importing from {source_file_name} file with {import_time} timestamp', True)
     track_records: List[TrackRecord] = []
-    track_records.extend(import_track_records_from_csv_file(old_csv_file_import))
+    track_records.extend(import_track_records_from_csv_file(source_file_name))
     log(f'Old file has {len(track_records)} tracks', True)
     log(f'Using {current_json_file} file as a helper to resolve data faster', True)
     if init_helper_json_file:
@@ -347,9 +367,9 @@ def import_from_file():
         for key, value in current_track_records_by_key.items()
     },
                               False)
-    create_timestamped_import_result(releases_to_import_by_id.values(), playlists_to_import_by_id.values())
+    create_timestamped_import_result(releases_to_import_by_id.values(), playlists_to_import_by_id.values(), import_time)
 
 
 if __name__ == "__main__":
-    import_from_file()
+    import_from_source()
     sys.exit()
