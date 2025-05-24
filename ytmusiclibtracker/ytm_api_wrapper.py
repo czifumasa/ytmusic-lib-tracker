@@ -1,3 +1,5 @@
+from typing import List
+
 import ytmusicapi
 
 from ytmusiclibtracker.common import *
@@ -47,11 +49,9 @@ def get_all_songs_from_my_library(api):
 
 
 def get_my_playlist_ids(api):
-    my_playlists = api.get_library_playlists(1000)
-    playlist_ids = []
-    for playlist in my_playlists:
-        playlist_ids.append(playlist['playlistId'])
-    return playlist_ids
+    my_playlists = [p['playlistId'] for p in api.get_library_playlists(1000)]
+    my_playlists_backup = [p['playlistId'] for p in api.get_library_playlists(1000)]
+    return merge_playlists(my_playlists, my_playlists_backup)
 
 
 def get_playlist_by_id(api, playlist_id):
@@ -131,3 +131,17 @@ def song_availability_status(song):
 
 def create_temporary_id_for_songs_without_one(playlist, counter):
     return 'missingId_from_' + playlist['id'] + '_' + str(counter)
+
+
+def merge_playlists(playlist_ids: List[str], backup_playlist_ids: List[str]) -> List[str]:
+    # Start with main playlist to preserve its order
+    seen = dict.fromkeys(playlist_ids)
+
+    # Add from backup only if not already present
+    for pid in backup_playlist_ids:
+        seen.setdefault(pid, None)
+
+    if len(playlist_ids) != len(backup_playlist_ids):
+        log("Filled missing playlists from backup")
+
+    return list(seen.keys())

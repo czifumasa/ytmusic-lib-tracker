@@ -79,7 +79,7 @@ Run from project's root folder:
 
 ##### Create exe
 
-Python scripts can be freezed and delivered as executable. It can be created
+Python scripts can be frozen and delivered as executable. It can be created
 using [cx_freeze](https://github.com/marcelotduarte/cx_Freeze).
 
 ```
