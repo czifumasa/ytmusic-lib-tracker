@@ -125,17 +125,23 @@ def map_to_track_info(track, track_record: Optional[TrackRecord] = None):
     if 'videoId' in track:
         imported_track = map_to_imported_track(track, track_record)
         video_type = track['videoType']
-        is_available = True if 'isAvailable' not in track else track['isAvailable']
+        is_available = False if 'isAvailable' not in track else track['isAvailable']
         is_user_uploaded = video_type is None and is_available is True
         imported_release = map_to_imported_release(track.get('album'), is_user_uploaded, track_record)
+        is_video = (
+                not is_user_uploaded
+                and not (track.get("album") and track["album"].get("name"))
+                and video_type != 'MUSIC_VIDEO_TYPE_ATV'
+        )
 
         return {
             'track': imported_track,
             'release': imported_release,
-            'isVideo': imported_release is None and is_available is True,
+            'isVideo': is_video,
             'isCurrentlyAvailable': is_available,
             'hasInvalidVideoId': False,
             'failedToFetchFromApi': False,
+            'isUploaded': False,
         }
     return None
 
@@ -151,6 +157,7 @@ def map_uploaded_track_record_to_track_info(track_record: TrackRecord):
         'isCurrentlyAvailable': False,
         'hasInvalidVideoId': False,
         'failedToFetchFromApi': True,
+        'isUploaded': True,
     }
 
 
@@ -165,6 +172,7 @@ def map_track_with_invalid_video_id(track_record: TrackRecord):
         'isCurrentlyAvailable': False,
         'hasInvalidVideoId': True,
         'failedToFetchFromApi': True,
+        'isUploaded': False,
     }
 
 
@@ -179,6 +187,7 @@ def map_track_failed_in_search_api(track_record: TrackRecord):
         'isCurrentlyAvailable': False,
         'hasInvalidVideoId': False,
         'failedToFetchFromApi': True,
+        'isUploaded': False,
     }
 
 
@@ -198,14 +207,26 @@ def merge_track_record_with_info(track_record: TrackRecord, track_info) -> Impor
 
 
 def merge_track_record_with_imported_release(track_record: TrackRecord, track_info) -> ImportedRelease or None:
-    if track_info["release"] is None or not track_record.album:
+    if track_info["isVideo"]:
+        # TODO return release with video as type
         return None
 
-    release = ImportedRelease.from_dict(track_info["release"])
-    return ImportedRelease(track_record.album, tracks=release.tracks, primary_artists=release.primaryArtists,
-                           complete_track_list=False,
-                           is_user_uploaded=release.isUserUploaded, release_type='UNKNOWN',
-                           youtube_browse_id=release.youtubeBrowseId)
+    if not track_record.album:
+        log('Invalid album for: ' + track_record.video_id)
+        return None
+
+    if track_info["release"]:
+        release = ImportedRelease.from_dict(track_info["release"])
+        return ImportedRelease(track_record.album, tracks=release.tracks, primary_artists=release.primaryArtists,
+                               complete_track_list=False,
+                               is_user_uploaded=release.isUserUploaded, release_type='UNKNOWN',
+                               youtube_browse_id=release.youtubeBrowseId)
+    else:
+        track = ImportedTrack.from_dict(track_info["track"])
+        return ImportedRelease(track_record.album, tracks=[track], primary_artists=[],
+                               complete_track_list=False,
+                               is_user_uploaded=False, release_type='UNKNOWN',
+                               youtube_browse_id=None)
 
 
 def merge_track_record_artists_with_info(track_record: TrackRecord, artists: List[ImportedArtist]) \
@@ -348,8 +369,8 @@ def import_from_file(source_file_name):
                 merged_track = merge_track_record_with_info(track_record, track_info)
                 merged_release = merge_track_record_with_imported_release(track_record, track_info)
 
-                if merged_release and merged_release.youtubeBrowseId:
-                    release_id = merged_release.youtubeBrowseId
+                if merged_release:
+                    release_id = merged_release.youtubeBrowseId or merged_track.youtubeTrackId
                     if release_id not in releases_to_import_by_id:
                         merged_release.tracks = [merged_track]
                         releases_to_import_by_id[release_id] = merged_release.to_dict()
