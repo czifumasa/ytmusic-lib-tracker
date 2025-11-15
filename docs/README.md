@@ -29,15 +29,51 @@ The cookie should not expire, unless you will manually log out of web client.
 
 ### Virtual environment installation (OPTIONAL)
 
+Alternatively you can work with application in isolated virtual environment. It's really helpful if you are working with
+many python apps and each one of them requires different libraries with conflicting versions. Next sections describe two common virtual environment managers: uv and pipenv.
+
+#### UV
+
 ##### Prerequisites
 
-* [pipenv](https://github.com/pypa/pipenv) - install with `pip install pipenv`
+* [uv](https://docs.astral.sh/uv/) - install with:
+
+ ```
+ curl -LsSf https://astral.sh/uv/install.sh | sh
+ ``` 
+ 
+##### Setup
+
+To create virtual environment in uv, open terminal in the project's root folder and type:
+
+ ```
+ uv venv
+ ```
+Activate it:
+
+ ```
+ source .venv/bin/activate
+ ```
+
+Then install required packages:
+
+ ```
+ uv pip install .
+ ```
+
+#### PIPENV
+
+##### Prerequisites
+
+* [pipenv](https://github.com/pypa/pipenv) - install with:
+
+ ```
+ pip install pipenv
+ ``` 
 
 ##### Setup
 
-Alternatively you can work with application in isolated virtual environment. It's really helpful if you are working with
-many python apps and each one of them requires different libraries with conflicting versions.
-To create virtual environment you can use pipenv. Open terminal in the project's root folder and type:
+To create virtual environment in pipenv, open terminal in the project's root folder and type:
 
  ```
  pipenv install -e .
