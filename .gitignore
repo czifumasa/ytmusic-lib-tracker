@@ -2,6 +2,7 @@
 
 build/
 dist/
+.venv/
 .idea/
 output/
 __pycache__/
