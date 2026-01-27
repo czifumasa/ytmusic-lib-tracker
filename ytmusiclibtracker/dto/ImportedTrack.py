@@ -6,19 +6,25 @@ from ytmusiclibtracker.dto.ImportedArtist import ImportedArtist
 class ImportedTrack:
     def __init__(
             self,
-            youtube_track_id: str,
+            youtube_track_id: Optional[str],
             title: str,
             primary_artists: List[ImportedArtist],
-            is_available: bool,
+            is_available: Optional[bool] = True,
             credited_name: Optional[str] = None,
-            track_number: Optional[int] = None,
+            track_number: Optional[str] = None,
             order_number: Optional[int] = None
     ):
+        if title is None or title.strip() == "":
+            raise ValueError("title must not be null or blank")
+
+        if youtube_track_id is not None and youtube_track_id.strip() == "":
+            raise ValueError("youtube_track_id must not be blank")
+
         self.youtubeTrackId = youtube_track_id
         self.title = title
         self.creditedName = credited_name
         self.trackNumber = track_number
-        self.primaryArtists = primary_artists
+        self.primaryArtists = primary_artists or []
         self.orderNumber = order_number
         self.isAvailable = is_available
 
@@ -40,7 +46,7 @@ class ImportedTrack:
             "title": self.title,
             "creditedName": self.creditedName,
             "trackNumber": self.trackNumber,
-            "primaryArtists": [artist.to_dict() for artist in self.primaryArtists],
+            "primaryArtists": [artist.to_dict() for artist in (self.primaryArtists or [])],
             "orderNumber": self.orderNumber,
             "isAvailable": self.isAvailable,
         }

@@ -10,9 +10,9 @@ class ImportedRelease:
             title: str,
             tracks: List[ImportedTrack],
             primary_artists: List[ImportedArtist],
-            complete_track_list: bool,
-            is_user_uploaded: bool,
-            release_type: Optional[str] = None,
+            complete_track_list: bool = False,
+            is_user_uploaded: bool = False,
+            release_type: str = 'UNKNOWN',
             code: Optional[str] = None,
             release_year: Optional[str] = None,
             url: Optional[str] = None,
@@ -21,8 +21,8 @@ class ImportedRelease:
             youtube_playlist_id: Optional[str] = None,
     ):
         self.title = title
-        self.tracks = tracks
-        self.primaryArtists = primary_artists
+        self.tracks = tracks or []
+        self.primaryArtists = primary_artists or []
         self.completeTrackList = complete_track_list
         self.isUserUploaded = is_user_uploaded
         self.releaseType = release_type
@@ -38,10 +38,10 @@ class ImportedRelease:
         return cls(
             title=data["title"],
             tracks=[ImportedTrack.from_dict(track) for track in data["tracks"]],
-            primary_artists=[ImportedArtist(**artist) for artist in data["primaryArtists"]],
+            primary_artists=[ImportedArtist.from_dict(artist) for artist in data["primaryArtists"]],
             complete_track_list=data["completeTrackList"],
             is_user_uploaded=data["isUserUploaded"],
-            release_type=data.get("releaseType"),
+            release_type=data.get("releaseType") or 'UNKNOWN',
             code=data.get("code"),
             release_year=data.get("releaseYear"),
             url=data.get("url"),
@@ -53,8 +53,8 @@ class ImportedRelease:
     def to_dict(self):
         return {
             "title": self.title,
-            "tracks": [track.to_dict() for track in self.tracks],
-            "primaryArtists": [artist.to_dict() for artist in self.primaryArtists],
+            "tracks": [track.to_dict() for track in (self.tracks or [])],
+            "primaryArtists": [artist.to_dict() for artist in (self.primaryArtists or [])],
             "completeTrackList": self.completeTrackList,
             "isUserUploaded": self.isUserUploaded,
             "releaseType": self.releaseType,

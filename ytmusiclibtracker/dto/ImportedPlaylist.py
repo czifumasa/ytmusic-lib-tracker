@@ -6,7 +6,7 @@ from ytmusiclibtracker.dto.ImportedPlaylistItem import ImportedPlaylistItem
 class ImportedPlaylist:
     def __init__(
             self,
-            youtube_playlist_id: str,
+            youtube_playlist_id: Optional[str],
             title: str,
             items: List[ImportedPlaylistItem],
             description: Optional[str],
@@ -16,7 +16,7 @@ class ImportedPlaylist:
     ):
         self.youtubePlaylistId = youtube_playlist_id
         self.title = title
-        self.items = items
+        self.items = items or []
         self.description = description
         self.year = year
         self.author = author
@@ -28,5 +28,5 @@ class ImportedPlaylist:
             "description": self.description,
             "year": self.year,
             "author": self.author,
-            "items": [item.to_dict() for item in self.items]
+            "items": [item.to_dict() for item in (self.items or [])]
         }
