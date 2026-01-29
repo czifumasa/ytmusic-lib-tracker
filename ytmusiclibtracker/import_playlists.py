@@ -387,7 +387,15 @@ def import_from_file(source_file_name):
                 merged_release.tracks = [merged_track]
                 releases_to_import_by_id[release_id] = merged_release.to_dict()
             else:
-                releases_to_import_by_id[release_id]["tracks"].append(merged_track.to_dict())
+                merged_track_dict = merged_track.to_dict()
+                merged_youtube_track_id = merged_track_dict.get("youtubeTrackId")
+                existing_tracks = releases_to_import_by_id[release_id].get("tracks") or []
+
+                if merged_youtube_track_id is None or not any(
+                        existing_track.get("youtubeTrackId") == merged_youtube_track_id
+                        for existing_track in existing_tracks
+                ):
+                    releases_to_import_by_id[release_id]["tracks"].append(merged_track_dict)
 
             if is_collection_source:
                 is_user_uploaded = track_record.playlist_id == TrackRecord.UPLOADED
