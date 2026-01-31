@@ -114,7 +114,14 @@ class TrackRecord:
                 self.playlist_name, self.playlist_id]
 
     def get_key(self):
-        return self.set_video_id + '_' + self.playlist_id
+        if self.set_video_id:
+            return self.set_video_id + '_' + self.playlist_id
+        artists_for_key = self.artists.strip()
+        if artists_for_key.endswith(' - Topic'):
+            artists_for_key = artists_for_key[:-len(' - Topic')].strip()
+        processed_artists = get_comparable_text(artists_for_key, True)
+        processed_title = get_comparable_text(self.title, True)
+        return processed_artists + '_' + processed_title + '_' + self.playlist_id
 
     def to_dict(self) -> dict:
         return {

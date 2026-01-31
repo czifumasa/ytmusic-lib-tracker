@@ -328,14 +328,17 @@ def import_from_file(source_file_name):
     invalid_video_ids = {trackRecord.video_id for trackRecord in track_records if
                          len(trackRecord.video_id) != 11}
     for track_record in track_records:
-        current_track_records_by_key[track_record.get_key()] = track_record
         if track_record.artists.endswith("- Topic"):
             original_artists = track_record.artists
-            new_artists = previous_track_records_by_key[track_record.get_key()].get('artists') or original_artists
+            previous_track_record = previous_track_records_by_key[track_record.get_key()]
+            new_artists = previous_track_record.get('artists') if previous_track_record else original_artists
             track_record.artists = new_artists
+            if not track_record.album:
+                track_record.album = previous_track_record.get('album')
+                track_record.video_id = previous_track_record.get('video_id')
             log(f"Updated artists from '{original_artists}' to '{new_artists}'"
                 f" for track '{track_record.video_id} on '{track_record.playlist_name}' playlist")
-
+        current_track_records_by_key[track_record.get_key()] = track_record
         is_collection_source = track_record.playlist_id in [TrackRecord.LIBRARY, TrackRecord.UPLOADED]
 
         if not is_collection_source:
