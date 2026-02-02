@@ -203,6 +203,31 @@ def map_track_record_release_to_imported_release(release_name: str, is_user_uplo
     return map_to_imported_release({"name": release_name, "id": None}, is_user_uploaded)
 
 
+def try_resolve_track_record_artists_from_helper(track_record: TrackRecord, track_info_by_video_id: dict) -> Optional[str]:
+    track_info = track_info_by_video_id.get(track_record.video_id)
+    if not isinstance(track_info, dict):
+        return None
+
+    track = track_info.get('track')
+    if not isinstance(track, dict):
+        return None
+
+    primary_artists = track.get('primaryArtists')
+    if not isinstance(primary_artists, list):
+        return None
+
+    artist_names = [
+        artist.get('fullName')
+        for artist in primary_artists
+        if isinstance(artist, dict)
+        and isinstance(artist.get('fullName'), str)
+        and artist.get('fullName').strip() != ''
+    ]
+    if not artist_names:
+        return None
+    return ', '.join(artist_names)
+
+
 def merge_track_record_with_info(track_record: TrackRecord, track_info) -> ImportedTrack:
     track = ImportedTrack.from_dict(track_info['track'])
     artists: List[ImportedArtist] = merge_track_record_artists_with_info(track_record, track.primaryArtists)
@@ -250,6 +275,8 @@ def merge_track_record_with_imported_release(track_record: TrackRecord, track_in
 
 def merge_track_record_artists_with_info(track_record: TrackRecord, artists: List[ImportedArtist]) \
         -> List[ImportedArtist]:
+    if track_record.artists is None or track_record.artists.strip() == '':
+        return artists
     track_record_artists: List[ImportedArtist] = map_track_record_artists_to_imported_artists(track_record.artists)
     artists_with_filled_ids: List[ImportedArtist] = []
     for artist in track_record_artists:
@@ -343,10 +370,27 @@ def import_from_file(source_file_name):
     invalid_video_ids = {trackRecord.video_id for trackRecord in track_records if
                          len(trackRecord.video_id) != 11}
     for track_record in track_records:
+        if track_record.artists is None or track_record.artists.strip() == '':
+            resolved_artists = try_resolve_track_record_artists_from_helper(track_record, track_info_by_video_id)
+            log(
+                "WARNING: Missing artists for track "
+                f"'{track_record.title}' (videoId='{track_record.video_id}', "
+                f"playlist='{track_record.playlist_name}'/{track_record.playlist_id})"
+                + (f". Resolved from helper as '{resolved_artists}'" if resolved_artists else ". Failed to resolve from helper")
+            )
+            track_record.artists = resolved_artists or ''
+
         if track_record.artists.endswith("- Topic"):
             original_artists = track_record.artists
             previous_track_record = previous_track_records_by_key[track_record.get_key()]
             new_artists = previous_track_record.get('artists') if previous_track_record else original_artists
+            if new_artists is None or new_artists.strip() == '':
+                log(
+                    "WARNING: Resolved empty artists from previous track record for track "
+                    f"'{track_record.title}' (videoId='{track_record.video_id}', "
+                    f"playlist='{track_record.playlist_name}'/{track_record.playlist_id})"
+                )
+                new_artists = ''
             track_record.artists = new_artists
             if not track_record.album:
                 track_record.album = previous_track_record.get('album')
