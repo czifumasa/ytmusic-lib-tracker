@@ -212,10 +212,6 @@ def merge_track_record_with_info(track_record: TrackRecord, track_info) -> Impor
 
 def merge_track_record_with_imported_release(track_record: TrackRecord, track_info) -> ImportedRelease or None:
 
-    if not track_record.album:
-        log('Invalid album for: ' + track_record.video_id)
-        return None
-
     if track_info["release"]:
         release = ImportedRelease.from_dict(track_info["release"])
         if track_info["isVideo"]:
@@ -229,7 +225,8 @@ def merge_track_record_with_imported_release(track_record: TrackRecord, track_in
                 youtube_browse_id=None,
             )
 
-        return ImportedRelease(track_record.album, tracks=release.tracks, primary_artists=release.primaryArtists,
+        release_title = track_record.album if track_record.album else track_record.title
+        return ImportedRelease(release_title, tracks=release.tracks, primary_artists=release.primaryArtists,
                                complete_track_list=False,
                                is_user_uploaded=release.isUserUploaded, release_type='UNKNOWN',
                                youtube_browse_id=release.youtubeBrowseId)
