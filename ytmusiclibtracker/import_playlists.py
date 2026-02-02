@@ -124,7 +124,7 @@ def map_to_imported_release(release, is_user_uploaded: bool,
 def map_to_track_info(track, track_record: Optional[TrackRecord] = None):
     if 'videoId' in track:
         video_type = track['videoType']
-        is_available = False if 'isAvailable' not in track else track['isAvailable']
+        is_available = track_record.is_available or False if 'isAvailable' not in track else track['isAvailable']
         imported_track = map_to_imported_track(track, is_available, track_record)
         is_user_uploaded = video_type is None and is_available is True
         imported_release = map_to_imported_release(track.get('album'), is_user_uploaded, track_record)
@@ -211,9 +211,6 @@ def merge_track_record_with_info(track_record: TrackRecord, track_info) -> Impor
 
 
 def merge_track_record_with_imported_release(track_record: TrackRecord, track_info) -> ImportedRelease or None:
-    if track_info["isVideo"]:
-        # TODO return release with video as type
-        return None
 
     if not track_record.album:
         log('Invalid album for: ' + track_record.video_id)
@@ -221,12 +218,33 @@ def merge_track_record_with_imported_release(track_record: TrackRecord, track_in
 
     if track_info["release"]:
         release = ImportedRelease.from_dict(track_info["release"])
+        if track_info["isVideo"]:
+            return ImportedRelease(
+                release.title,
+                tracks=[release.tracks],
+                primary_artists=release.primaryArtists,
+                complete_track_list=True,
+                is_user_uploaded=False,
+                release_type='UNKNOWN_VIDEO',
+                youtube_browse_id=None,
+            )
+
         return ImportedRelease(track_record.album, tracks=release.tracks, primary_artists=release.primaryArtists,
                                complete_track_list=False,
                                is_user_uploaded=release.isUserUploaded, release_type='UNKNOWN',
                                youtube_browse_id=release.youtubeBrowseId)
     else:
         track = ImportedTrack.from_dict(track_info["track"])
+        if track_info["isVideo"]:
+            return ImportedRelease(
+                track.title,
+                tracks=[track],
+                primary_artists=[],
+                complete_track_list=True,
+                is_user_uploaded=False,
+                release_type='UNKNOWN_VIDEO',
+                youtube_browse_id=None,
+            )
         return ImportedRelease(track_record.album, tracks=[track], primary_artists=[],
                                complete_track_list=False,
                                is_user_uploaded=False, release_type='UNKNOWN',
