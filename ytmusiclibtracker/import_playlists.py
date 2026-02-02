@@ -228,6 +228,21 @@ def try_resolve_track_record_artists_from_helper(track_record: TrackRecord, trac
     return ', '.join(artist_names)
 
 
+def try_resolve_track_record_album_from_helper(track_record: TrackRecord, track_info_by_video_id: dict) -> Optional[str]:
+    track_info = track_info_by_video_id.get(track_record.video_id)
+    if not isinstance(track_info, dict):
+        return None
+
+    release = track_info.get('release')
+    if not isinstance(release, dict):
+        return None
+
+    release_title = release.get('title')
+    if not isinstance(release_title, str) or release_title.strip() == '':
+        return None
+    return release_title
+
+
 def merge_track_record_with_info(track_record: TrackRecord, track_info) -> ImportedTrack:
     track = ImportedTrack.from_dict(track_info['track'])
     artists: List[ImportedArtist] = merge_track_record_artists_with_info(track_record, track.primaryArtists)
@@ -379,6 +394,16 @@ def import_from_file(source_file_name):
                 + (f". Resolved from helper as '{resolved_artists}'" if resolved_artists else ". Failed to resolve from helper")
             )
             track_record.artists = resolved_artists or ''
+
+        if track_record.album is None or track_record.album.strip() == '':
+            resolved_album = try_resolve_track_record_album_from_helper(track_record, track_info_by_video_id)
+            log(
+                "WARNING: Missing album for track "
+                f"'{track_record.title}' (videoId='{track_record.video_id}', "
+                f"playlist='{track_record.playlist_name}'/{track_record.playlist_id})"
+                + (f". Resolved from helper as '{resolved_album}'" if resolved_album else ". Failed to resolve from helper")
+            )
+            track_record.album = resolved_album or ''
 
         if track_record.artists.endswith("- Topic"):
             original_artists = track_record.artists
