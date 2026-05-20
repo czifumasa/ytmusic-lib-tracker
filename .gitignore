@@ -5,6 +5,7 @@ dist/
 .venv/
 .idea/
 output/
+input/
 __pycache__/
 *.egg-info/
 *.iml
