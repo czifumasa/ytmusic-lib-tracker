@@ -124,7 +124,7 @@ def map_to_imported_release(release, is_user_uploaded: bool,
 def map_to_track_info(track, track_record: Optional[TrackRecord] = None):
     if 'videoId' in track:
         video_type = track['videoType']
-        is_available = track_record.is_available or False if 'isAvailable' not in track else track['isAvailable']
+        is_available = track['isAvailable'] if 'isAvailable' in track else bool(int(track_record.is_available or 0))
         imported_track = map_to_imported_track(track, is_available, track_record)
         is_user_uploaded = video_type is None and is_available is True
         imported_release = map_to_imported_release(track.get('album'), is_user_uploaded, track_record)
@@ -407,7 +407,7 @@ def import_from_file(source_file_name):
 
         if track_record.artists.endswith("- Topic"):
             original_artists = track_record.artists
-            previous_track_record = previous_track_records_by_key[track_record.get_key()]
+            previous_track_record = previous_track_records_by_key.get(track_record.get_key())
             new_artists = previous_track_record.get('artists') if previous_track_record else original_artists
             if new_artists is None or new_artists.strip() == '':
                 log(
@@ -420,8 +420,18 @@ def import_from_file(source_file_name):
             if not track_record.album:
                 track_record.album = previous_track_record.get('album')
                 track_record.video_id = previous_track_record.get('video_id')
-            log(f"Updated artists from '{original_artists}' to '{new_artists}'"
-                f" for track '{track_record.video_id} on '{track_record.playlist_name}' playlist")
+            if new_artists != original_artists:
+                log(f"Updated artists from '{original_artists}' to '{new_artists}'"
+                    f" for track '{track_record.video_id}' on '{track_record.playlist_name}' playlist")
+            else:
+                track_record.artists = ''
+                log(
+                    f"WARNING: Could not resolve '- Topic' artists from previous records for track "
+                    f"'{track_record.title}' (videoId='{track_record.video_id}', "
+                    f"playlist='{track_record.playlist_name}'/{track_record.playlist_id}, "
+                    f"artist='{original_artists}'). "
+                    f"Falling back to helper file artists during merge."
+                )
         current_track_records_by_key[track_record.get_key()] = track_record
         is_collection_source = track_record.playlist_id in [TrackRecord.LIBRARY, TrackRecord.UPLOADED]
 
