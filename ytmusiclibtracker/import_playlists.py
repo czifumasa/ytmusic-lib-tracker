@@ -282,7 +282,8 @@ def merge_track_record_with_imported_release(track_record: TrackRecord, track_in
                 release_type='UNKNOWN_VIDEO',
                 youtube_browse_id=None,
             )
-        return ImportedRelease(track_record.album, tracks=[track], primary_artists=[],
+        release_title = track_record.album if track_record.album else track_record.title
+        return ImportedRelease(release_title, tracks=[track], primary_artists=[],
                                complete_track_list=False,
                                is_user_uploaded=False, release_type='UNKNOWN',
                                youtube_browse_id=None)
